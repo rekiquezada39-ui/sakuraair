@@ -3,7 +3,7 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 const N='SakuraAir',DOM='https://sakuraair.pages.dev';
 const MAIL='contact.sakuraair@gmail.com';
 const MVERIFY='<meta name="monetag" content="20276d347c7d19d7d24cea04109c96d1"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
-const ZONAS=[];                          // [['dominio/tag.js?z=NNN',''] o ['dominio/tag.min.js','NNN']]
+const ZONAS=[['nap5k.com/tag.min.js','11489146']];   // In-Page Push
 // ════════════════════════════════════
 const s=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
