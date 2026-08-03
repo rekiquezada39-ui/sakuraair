@@ -1,0 +1,50 @@
+name: Update anime schedule
+
+on:
+  schedule:
+    # 10:00 UTC = 7 PM Japan / 6 AM ET — despues del bloque nocturno japones
+    - cron: '0 10 * * *'
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build site
+        run: node build.js
+
+      # Sin este paso el historico se pierde cada dia
+      - name: Save history
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f history.json
+          if git diff --staged --quiet; then
+            echo "No history changes."
+          else
+            git commit -m "Anime history $(date -u +%Y-%m-%d) [skip ci]"
+            git pull --rebase --autostash origin main
+            git push
+          fi
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy dist --project-name=sakuraair --branch=main
