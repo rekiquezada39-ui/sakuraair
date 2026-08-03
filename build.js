@@ -53,19 +53,39 @@ a{color:inherit;text-decoration:none}
 body.lock{overflow:hidden}
 img{display:block;max-width:100%}
 
-/* ══ PETALOS CAYENDO (CSS puro, GPU) ══ */
-.petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden}
-.petal{position:absolute;top:-6vh;width:13px;height:13px;opacity:0;
- background:radial-gradient(ellipse at 30% 30%,#ffd3e4,#f3a8c4 60%,#e87fa8);
- border-radius:100% 0 100% 0;will-change:transform,opacity;
- animation:fall linear infinite}
-@keyframes fall{
- 0%{opacity:0;transform:translate3d(0,-10vh,0) rotate(0deg) scale(.85)}
- 8%{opacity:.85}
- 92%{opacity:.7}
- 100%{opacity:0;transform:translate3d(14vw,108vh,0) rotate(540deg) scale(1.05)}
-}
-@media(prefers-reduced-motion:reduce){.petals{display:none}}
+/* ══ PETALOS CAYENDO — 2 ejes: caida + giro 3D + vaiven ══ */
+.petals{position:fixed;inset:0;pointer-events:none;z-index:1;overflow:hidden;
+ perspective:600px;contain:strict}
+/* el <i> cae zigzagueando; el <b> de adentro gira en 3D.
+   Todo es transform puro = lo mueve la GPU, no repinta nada */
+.petal{position:absolute;top:0;will-change:transform;animation:linear infinite}
+.petal b{display:block;width:14px;height:12px;opacity:.9;
+ background:radial-gradient(ellipse at 32% 26%,#fff0f6,#ffc4dc 42%,#f3a8c4 72%,#e87fa8);
+ border-radius:100% 12% 100% 12%;
+ box-shadow:inset -1px -2px 3px rgba(200,110,150,.28);
+ transform-style:preserve-3d;will-change:transform;
+ animation:gira linear infinite}
+/* tres rutas distintas para que no caigan todos igual */
+@keyframes cae1{
+ 0%{transform:translate3d(0,-9vh,0)}   25%{transform:translate3d(3.2vw,22vh,0)}
+ 50%{transform:translate3d(-1.8vw,52vh,0)} 75%{transform:translate3d(3.6vw,82vh,0)}
+ 100%{transform:translate3d(-.8vw,113vh,0)}}
+@keyframes cae2{
+ 0%{transform:translate3d(0,-9vh,0)}   30%{transform:translate3d(-2.6vw,28vh,0)}
+ 60%{transform:translate3d(2.4vw,64vh,0)} 100%{transform:translate3d(-3.4vw,113vh,0)}}
+@keyframes cae3{
+ 0%{transform:translate3d(0,-9vh,0)}   20%{transform:translate3d(1.4vw,20vh,0)}
+ 45%{transform:translate3d(-3.8vw,46vh,0)} 70%{transform:translate3d(1.2vw,74vh,0)}
+ 100%{transform:translate3d(4.2vw,113vh,0)}}
+/* el giro 3D: el petalo se voltea y por momentos se ve de canto */
+@keyframes gira{
+ 0%{transform:rotate3d(1,.7,.3,0deg)}
+ 100%{transform:rotate3d(1,.7,.3,360deg)}}
+/* pétalos grandes al frente, chicos al fondo — da profundidad */
+.petal.f b{width:19px;height:16px;opacity:.95;filter:blur(.2px)}
+.petal.d b{width:9px;height:8px;opacity:.5;filter:blur(1.1px)}
+@media(prefers-reduced-motion:reduce){.petals{display:none}
+ .hero .bgimg,.hero .glow,.hero .chica,.hero .shine i{animation:none!important}}
 
 /* ══ HEADER ══ */
 header{background:rgba(255,251,253,.9);backdrop-filter:saturate(180%) blur(18px);
@@ -109,14 +129,46 @@ header:after{content:'';position:absolute;left:0;right:0;bottom:-2px;height:2px;
 .drawer a .n{font-size:.76rem;color:var(--tx2)}
 .dsep{height:1px;background:var(--bd);margin:10px 12px}
 
-/* ══ HERO ══ */
-.hero{position:relative;min-height:min(74vh,540px);display:flex;align-items:center;
- overflow:hidden;background:linear-gradient(160deg,#fef7fa,#fdeef4 45%,#fce4ee)}
-.hero .bgimg{position:absolute;inset:0;background-size:cover;background-position:center right;
- opacity:.92}
+/* ══ HERO POR CAPAS (parallax + respiracion) ══ */
+.hero{position:relative;min-height:min(78vh,560px);display:flex;align-items:center;
+ overflow:hidden;background:linear-gradient(160deg,#fef7fa,#fdeef4 45%,#fce4ee);
+ perspective:900px;isolation:isolate}
+/* capa 1 — fondo: zoom lento infinito */
+.hero .bgimg{position:absolute;inset:-3%;background-size:cover;background-position:center right;
+ opacity:.94;z-index:1;will-change:transform;
+ animation:kenburns 34s ease-in-out infinite alternate;
+ transform:translate3d(var(--px,0px),var(--py,0px),0) scale(1.05)}
 .hero .bgimg:after{content:'';position:absolute;inset:0;
  background:linear-gradient(100deg,rgba(255,251,253,.97) 0%,rgba(255,251,253,.86) 34%,rgba(255,251,253,.18) 62%,transparent 82%)}
-.hero .in{position:relative;z-index:3;max-width:1180px;margin:0 auto;padding:52px 24px;width:100%}
+@keyframes kenburns{
+ 0%{transform:translate3d(var(--px,0px),var(--py,0px),0) scale(1.045)}
+ 100%{transform:translate3d(calc(var(--px,0px) - 10px),calc(var(--py,0px) - 6px),0) scale(1.11)}}
+/* capa 2 — luz calida del atardecer que late */
+.hero .glow{position:absolute;z-index:2;right:26%;top:44%;width:52vw;height:52vw;
+ max-width:620px;max-height:620px;transform:translate(50%,-50%);pointer-events:none;
+ background:radial-gradient(circle,rgba(255,201,120,.5) 0%,rgba(255,167,150,.24) 34%,transparent 66%);
+ mix-blend-mode:screen;will-change:opacity,transform;
+ animation:breathe 7.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:.6;transform:translate(50%,-50%) scale(1)}
+ 50%{opacity:1;transform:translate(50%,-50%) scale(1.12)}}
+/* capa 3 — la chica: entra flotando y respira */
+.hero .chica{position:absolute;z-index:4;right:3.5vw;bottom:0;height:96%;width:auto;
+ pointer-events:none;user-select:none;
+ filter:drop-shadow(-14px 16px 26px rgba(150,80,110,.24));
+ will-change:transform,opacity;
+ animation:entra 1.25s cubic-bezier(.16,1,.3,1) both, flota 6.5s 1.25s ease-in-out infinite}
+@keyframes entra{from{opacity:0;transform:translate3d(56px,18px,0) scale(1.03)}
+ to{opacity:1;transform:none}}
+@keyframes flota{0%,100%{transform:translate3d(var(--gx,0px),0,0)}
+ 50%{transform:translate3d(var(--gx,0px),-13px,0)}}
+/* capa 4 — pelo/manga: brillo que barre */
+.hero .shine{position:absolute;z-index:5;inset:0;pointer-events:none;overflow:hidden}
+.hero .shine i{position:absolute;top:-40%;left:-30%;width:22%;height:190%;
+ background:linear-gradient(100deg,transparent,rgba(255,255,255,.5),transparent);
+ transform:rotate(14deg) translate3d(0,0,0);filter:blur(9px);
+ animation:barre 9s 2s ease-in-out infinite}
+@keyframes barre{0%{left:-30%;opacity:0}12%{opacity:.85}34%{left:118%;opacity:0}100%{left:118%;opacity:0}}
+.hero .in{position:relative;z-index:6;max-width:1180px;margin:0 auto;padding:52px 24px;width:100%}
 .hero h1{font-size:clamp(2rem,5.2vw,3.3rem);font-weight:800;letter-spacing:-.04em;line-height:1.07;
  max-width:15ch;margin-bottom:16px;
  animation:slideUp .7s cubic-bezier(.16,1,.3,1) both}
@@ -323,11 +375,16 @@ footer:before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
 @media(max-width:1000px){.burger{display:flex}.hnav{display:none}}
 @media(max-width:734px){
  .hin{height:58px;gap:10px;padding:0 14px}.lgt{font-size:1.14rem}.upd{display:none}
- .hero{min-height:auto}
- .hero .in{padding:40px 16px 46px}
+ .hero{min-height:auto;padding-bottom:150px}
+ .hero .in{padding:40px 16px 20px}
  .hero .bgimg{background-position:72% center}
- .hero .bgimg:after{background:linear-gradient(175deg,rgba(255,251,253,.93) 0%,rgba(255,251,253,.8) 46%,rgba(255,251,253,.55) 100%)}
+ .hero .bgimg:after{background:linear-gradient(172deg,rgba(255,251,253,.95) 0%,rgba(255,251,253,.84) 40%,rgba(255,251,253,.3) 74%,transparent 100%)}
  .hero p{font-size:.96rem;margin-bottom:20px}
+ /* en movil la chica se va abajo a la derecha, chiquita, sin tapar el texto */
+ .hero .chica{height:auto;width:min(46vw,215px);right:-2vw;bottom:-6px;
+  filter:drop-shadow(-8px 10px 16px rgba(150,80,110,.2))}
+ .hero .glow{right:14%;top:60%;width:74vw;height:74vw}
+ .hero .shine{display:none}
  .next{margin-top:-40px;padding:0 14px}
  .nextc{padding:17px;gap:13px;border-radius:17px;flex-wrap:wrap}
  .nextc .po{width:60px}
@@ -357,13 +414,21 @@ footer:before{content:'';position:absolute;top:0;left:0;right:0;height:2px;
 
 const LOGO='<svg viewBox="0 0 34 34" width="30" height="30" fill="none" aria-hidden="true"><g><circle cx="17" cy="8.4" r="4.6" fill="#f3a8c4"/><circle cx="25.2" cy="14.3" r="4.6" fill="#f0b8cd"/><circle cx="22" cy="24" r="4.6" fill="#f3a8c4"/><circle cx="12" cy="24" r="4.6" fill="#f0b8cd"/><circle cx="8.8" cy="14.3" r="4.6" fill="#f3a8c4"/><circle cx="17" cy="17" r="3.5" fill="#c9a227"/></g></svg>';
 
-let SIDE='',DRAWER='';
+let SIDE='',DRAWER='',PRE='';
+// [izq vw, dur caida s, retraso s, dur giro s, ruta 1-3, capa]
 const PETALOS=(()=>{let h='<div class="petals" aria-hidden="true">';
- const cfg=[[4,11,0],[16,14,1.6],[28,9,3.1],[39,13,.7],[51,16,2.3],[63,10,4.2],[74,12,1.1],[86,15,3.6],[94,11,2.0],[9,13,5.1],[45,10,6.2],[70,14,4.8]];
- cfg.forEach(([l,d,de])=>{h+=`<i class="petal" style="left:${l}vw;animation-duration:${d}s;animation-delay:-${de}s"></i>`});
+ const cfg=[
+  [ 3,13,0  ,2.6,1,'f'],[11,17,2.1,4.1,2,'d'],[19,10,5.3,1.9,3,'' ],
+  [27,15,1.2,3.3,2,'' ],[35,12,6.4,2.2,1,'f'],[43,18,3.7,4.8,3,'d'],
+  [51,11,0.8,2.0,3,'' ],[58,14,4.9,3.6,1,'' ],[66,16,2.6,4.2,2,'d'],
+  [73,10,7.1,1.7,1,'f'],[81,15,1.9,3.1,3,'' ],[88,12,5.8,2.4,2,'' ],
+  [95,17,3.2,4.5,1,'d'],[ 7,11,8.2,2.1,2,'' ],[63,13,6.9,2.8,3,'f']];
+ cfg.forEach(([l,d,de,gr,ru,cl])=>{
+  h+=`<i class="petal ${cl}" style="left:${l}vw;animation-name:cae${ru};animation-duration:${d}s;animation-delay:-${de}s">`+
+     `<b style="animation-duration:${gr}s;animation-delay:-${de}s"></b></i>`});
  return h+'</div>'})();
 
-const HEAD=(t,d,c,r,nx)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co"><link rel="stylesheet" href="${r}s.css"></head><body>
+const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css"></head><body>
 ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -409,6 +474,37 @@ if('IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion:redu
   if(x.isIntersecting){x.target.classList.add('on');io.unobserve(x.target)}})},{rootMargin:'0px 0px -8% 0px',threshold:.05});
  document.querySelectorAll('.rv').forEach(function(el){io.observe(el)});
 } else {document.querySelectorAll('.rv').forEach(function(el){el.classList.add('on')})}
+// ── parallax del hero: fondo y chica se mueven a distinta velocidad
+(function(){var h=document.getElementById('hero');
+ if(!h||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+ var bg=h.querySelector('.bgimg'),ch=h.querySelector('.chica');
+ if(!bg)return;
+ var mx=0,my=0,cx=0,cy=0,run=false,vis=true;
+ function loop(){cx+=(mx-cx)*.075;cy+=(my-cy)*.075;
+  bg.style.setProperty('--px',(cx*-16).toFixed(2)+'px');
+  bg.style.setProperty('--py',(cy*-10).toFixed(2)+'px');
+  if(ch)ch.style.setProperty('--gx',(cx*7).toFixed(2)+'px');
+  if(Math.abs(mx-cx)>.002||Math.abs(my-cy)>.002){requestAnimationFrame(loop)}else{run=false}}
+ function kick(){if(!run&&vis){run=true;requestAnimationFrame(loop)}}
+ h.addEventListener('pointermove',function(ev){var r=h.getBoundingClientRect();
+  mx=(ev.clientX-r.left)/r.width*2-1;my=(ev.clientY-r.top)/r.height*2-1;kick()},{passive:true});
+ h.addEventListener('pointerleave',function(){mx=0;my=0;kick()},{passive:true});
+ // en movil: se inclina con el giroscopio
+ if(window.DeviceOrientationEvent&&matchMedia('(hover:none)').matches){
+  addEventListener('deviceorientation',function(ev){
+   if(ev.gamma==null)return;
+   mx=Math.max(-1,Math.min(1,ev.gamma/26));my=Math.max(-1,Math.min(1,((ev.beta||45)-45)/26));kick()},{passive:true})}
+ // apagar todo cuando el hero sale de pantalla (no quema bateria)
+ if('IntersectionObserver' in window){new IntersectionObserver(function(en){
+  vis=en[0].isIntersecting;h.style.animationPlayState=vis?'':'paused';
+  h.querySelectorAll('.bgimg,.glow,.chica,.shine i').forEach(function(el){
+   el.style.animationPlayState=vis?'running':'paused'});
+  if(vis)kick()},{threshold:0}).observe(h)}
+})();
+// ── pausar los petalos si la pestaña esta en segundo plano
+document.addEventListener('visibilitychange',function(){
+ var st=document.hidden?'paused':'running';
+ document.querySelectorAll('.petal,.petal b').forEach(function(el){el.style.animationPlayState=st})});
 // cuenta regresiva viva
 function tick2(){var now=Math.floor(Date.now()/1000);
  document.querySelectorAll('[data-at]').forEach(function(el){
@@ -426,7 +522,7 @@ tick2();setInterval(tick2,1000);
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>`;
 
 const L=(t,d,c,b,r='',nx=false)=>HEAD(t,d,c,r,nx)+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
-const LH=(t,d,c,hero,b,r='')=>HEAD(t,d,c,r,false)+hero+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
+const LH=(t,d,c,hero,b,r='')=>HEAD(t,d,c,r,false,true)+hero+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
 
 // ══ PNG ══
 const FK='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789$.,-:/|!?()+% ';
@@ -576,6 +672,23 @@ DRAWER=`<a href="">Airing now</a><a href="schedule">Weekly schedule</a><a href="
  `<div class="dttl">Top genres</div>`+gens.slice(0,10).map(([g,v])=>`<a href="genre-${s(g)}">${g}<span class="n">${v.length}</span></a>`).join('');
 
 f.rmSync(O,{recursive:true,force:true});f.mkdirSync(O,{recursive:true});
+// ── capas del hero: si no estan locales se bajan del repo (asi build.js viaja solo)
+const CAPAS={};
+for(const x of ['bg.webp','girl.webp']){
+ const loc=P.join(__dirname,x);
+ if(f.existsSync(loc)){f.copyFileSync(loc,P.join(O,x));CAPAS[x]=1;continue}
+ try{
+  const r=await fetch(`https://raw.githubusercontent.com/rekiquezada39-ui/sakuraair/main/${x}`);
+  if(r.ok){const b=Buffer.from(await r.arrayBuffer());
+   f.writeFileSync(loc,b);f.writeFileSync(P.join(O,x),b);CAPAS[x]=1;
+   console.log(`   \u2713 ${x} (${(b.length/1024).toFixed(0)} KB)`)}
+ }catch(err){}
+}
+const HAY_BG=!!CAPAS['bg.webp'],HAY_GIRL=!!CAPAS['girl.webp'];
+PRE=(HAY_GIRL?'<link rel="preload" as="image" href="girl.webp" type="image/webp" fetchpriority="high">':'')
+   +(HAY_BG?'<link rel="preload" as="image" href="bg.webp" type="image/webp">':'');
+if(!HAY_BG||!HAY_GIRL)console.log(`   \u26a0 faltan capas (fondo:${HAY_BG?'si':'no'} chica:${HAY_GIRL?'si':'no'}) — el hero usa el degradado`);
+
 console.log('📄 Generating HTML:');
 
 // ── componentes
@@ -600,8 +713,11 @@ const top=[...A].filter(a=>a.sc>=75).sort((a,b)=>b.pop-a.pop);
 
 f.writeFileSync(P.join(O,'search.json'),JSON.stringify(A.map(a=>[a.t,a.slug,a.ep,a.at])));
 
-const HERO=`<section class="hero">
-<div class="bgimg" style="background-image:image-set(url('hero.webp') type('image/webp'),url('hero.jpg') type('image/jpeg'))"></div>
+const HERO=`<section class="hero" id="hero">
+${HAY_BG?`<div class="bgimg" style="background-image:url('bg.webp')"></div>`:''}
+<div class="glow" aria-hidden="true"></div>
+${HAY_GIRL?`<img class="chica" src="girl.webp" alt="" width="432" height="820" fetchpriority="high" decoding="async">
+<div class="shine" aria-hidden="true"><i></i></div>`:''}
 <div class="in">
 <h1>When does the <b>next episode</b> come out?</h1>
 <p>Live countdowns for ${A.length} currently airing anime. Know the exact minute your show drops.</p>
@@ -871,18 +987,6 @@ f.writeFileSync(P.join(O,'404.html'),L(
 
 // ── estáticos
 f.writeFileSync(P.join(O,'s.css'),CSS);
-// hero: si no esta local, se baja del repo (asi el build.js viaja solo)
-const HEROES=['hero.webp','hero.jpg'];
-for(const x of HEROES){
- const loc=P.join(__dirname,x);
- if(f.existsSync(loc)){f.copyFileSync(loc,P.join(O,x));continue}
- try{
-  const r=await fetch(`https://raw.githubusercontent.com/rekiquezada39-ui/sakuraair/main/${x}`);
-  if(r.ok){const b=Buffer.from(await r.arrayBuffer());
-   f.writeFileSync(loc,b);f.writeFileSync(P.join(O,x),b);
-   console.log(`   \u2713 ${x} descargado (${(b.length/1024).toFixed(0)} KB)`);}
- }catch(err){console.log(`   ${x} no disponible — el hero usara solo el degradado`)}
-}
 f.writeFileSync(P.join(O,'manifest.json'),JSON.stringify({
  name:N+' — Anime Countdowns',short_name:N,
  description:'Live countdowns for currently airing anime episodes.',
@@ -944,9 +1048,9 @@ f.writeFileSync(P.join(O,'_headers'),
 
 /s.css
   Cache-Control: public, max-age=3600, stale-while-revalidate=604800
-/hero.webp
+/bg.webp
   Cache-Control: public, max-age=604800, immutable
-/hero.jpg
+/girl.webp
   Cache-Control: public, max-age=604800, immutable
 /favicon.ico
   Cache-Control: public, max-age=86400
