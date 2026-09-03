@@ -3,7 +3,8 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 const N='SakuraAir',DOM='https://sakuraair.pages.dev';
 const MAIL='contact.sakuraair@gmail.com';
 const MVERIFY='<meta name="monetag" content="20276d347c7d19d7d24cea04109c96d1"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
-const ZONAS=[['nap5k.com/tag.min.js','11489146']];   // In-Page Push
+const ZONAS=[['nap5k.com/tag.min.js','11489146'],   // In-Page Push
+            ['al5sm.com/tag.min.js','11715149']];   // OnClick (instalacion oficial Monetag)
 const DLINK='https://omg10.com/4/10943895';          // Direct Link Monetag
 // ════════════════════════════════════
 const s=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -521,27 +522,7 @@ function tick2(){var now=Math.floor(Date.now()/1000);
 tick2();setInterval(tick2,1000);
 })();<\/script>
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
-<script>
-(function(){
- var URL='${DLINK}',CADA=3,c=0;
- try{var r=JSON.parse(localStorage.getItem('sa_dl')||'null');
-  if(!r||r.d!==new Date().getDate())r={d:new Date().getDate(),n:0};
-  c=r.n||0;
- }catch(e){}
- document.addEventListener('click',function(e){
-  try{
-   var t=e.target,stop=document.body;
-   while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;
-   if(!t||t===stop)return;
-   c++;
-   try{localStorage.setItem('sa_dl',JSON.stringify({d:new Date().getDate(),n:c}))}catch(x){}
-   if(c%CADA!==0)return;
-   var w=window.open(URL,'_blank','noopener');
-   if(w&&w.focus)try{w.focus()}catch(x){}
-  }catch(x){}
- },true);
-})();
-<\/script>`;
+`;
 
 const L=(t,d,c,b,r='',nx=false)=>HEAD(t,d,c,r,nx)+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
 const LH=(t,d,c,hero,b,r='')=>HEAD(t,d,c,r,false,true)+hero+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
