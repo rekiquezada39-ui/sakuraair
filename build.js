@@ -5,7 +5,7 @@ const MAIL='contact.sakuraair@gmail.com';
 const MVERIFY='<meta name="monetag" content="20276d347c7d19d7d24cea04109c96d1"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
 const ZONAS=[['nap5k.com/tag.min.js','11489146'],   // In-Page Push
             ['al5sm.com/tag.min.js','11715149']];   // OnClick (instalacion oficial Monetag)
-const DLINK='https://omg10.com/4/10943895';          // Direct Link Monetag
+const DLINK='https://omg10.com/4/11715261';          // Direct Link Monetag (nuevo, sakuraair)
 // ════════════════════════════════════
 const s=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
  .replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70);
