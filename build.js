@@ -522,6 +522,27 @@ function tick2(){var now=Math.floor(Date.now()/1000);
 tick2();setInterval(tick2,1000);
 })();<\/script>
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
+<script>
+(function(){
+ var URL='${DLINK}',CADA=2,c=0;
+ try{var r=JSON.parse(localStorage.getItem('sa_dl')||'null');
+  if(!r||r.d!==new Date().getDate())r={d:new Date().getDate(),n:0};
+  c=r.n||0;
+ }catch(e){}
+ document.addEventListener('click',function(e){
+  try{
+   var t=e.target,stop=document.body;
+   while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;
+   if(!t||t===stop)return;
+   c++;
+   try{localStorage.setItem('sa_dl',JSON.stringify({d:new Date().getDate(),n:c}))}catch(x){}
+   if(c%CADA!==0)return;
+   var w=window.open(URL,'_blank','noopener');
+   if(w&&w.focus)try{w.focus()}catch(x){}
+  }catch(x){}
+ },true);
+})();
+<\/script>
 `;
 
 const L=(t,d,c,b,r='',nx=false)=>HEAD(t,d,c,r,nx)+`<div class="shell"><main>${b}</main></div>`+FOOT(r);
