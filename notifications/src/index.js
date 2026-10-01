@@ -31,6 +31,8 @@ export default {
    await env.DB.prepare(`INSERT INTO alerts(endpoint,subscription,anime_id,title,episode,airing_at,url,created_at)
     VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(endpoint,anime_id) DO UPDATE SET subscription=excluded.subscription,title=excluded.title,episode=excluded.episode,airing_at=excluded.airing_at,url=excluded.url,created_at=excluded.created_at`)
     .bind(s.endpoint,JSON.stringify(s),+b.animeId,String(b.title||'Anime').slice(0,160),+b.episode,+b.airingAt,String(b.url||'https://sakuraair.pages.dev/').slice(0,500),Date.now()).run();
+   // Confirmation push proves this device can receive alerts before the real premiere.
+   try{await sendPushNotification(s,{title:'Episode alert enabled',body:`We’ll notify you when episode ${+b.episode} of ${String(b.title||'this anime')} airs.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:String(b.url||'https://sakuraair.pages.dev/')},{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY,ttl:300,urgency:'normal'})}catch{}
    return json({ok:true});
   }
   if(u.pathname==='/unsubscribe'&&request.method==='POST'){
@@ -48,8 +50,11 @@ export default {
  async scheduled(event,env,ctx){
   ctx.waitUntil((async()=>{
    const now=Math.floor(Date.now()/1000);
-   const {results=[]}=await env.DB.prepare('SELECT * FROM alerts WHERE airing_at<=? ORDER BY airing_at LIMIT 200').bind(now+30).all();
-   for(const row of results){await sendOne(env,row);await env.DB.prepare('DELETE FROM alerts WHERE endpoint=? AND anime_id=?').bind(row.endpoint,row.anime_id).run()}
+   const {results=[]}=await env.DB.prepare('SELECT * FROM alerts WHERE airing_at<=? ORDER BY airing_at LIMIT 200').bind(now).all();
+   for(const row of results){
+    const delivered=await sendOne(env,row);
+    if(delivered)await env.DB.prepare('DELETE FROM alerts WHERE endpoint=? AND anime_id=?').bind(row.endpoint,row.anime_id).run();
+   }
   })());
  }
 };
