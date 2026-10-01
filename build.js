@@ -855,6 +855,7 @@ var q='query($id:Int){Media(id:$id,type:ANIME){id idMal title{romaji english nat
 function date(x){if(!x||!x.year)return 'Unknown';return [x.year,String(x.month||1).padStart(2,'0'),String(x.day||1).padStart(2,'0')].join('-')}
 function label(x){return String(x||'Unknown').replace(/_/g,' ').toLowerCase().split(' ').map(function(w){return w?w.charAt(0).toUpperCase()+w.slice(1):w}).join(' ')}
 function fact(k,v){return v?'<div class="fact"><b>'+k+'</b><span>'+v+'</span></div>':''}
+function plain(x){var d=document.createElement('div');d.innerHTML=x||'';return d.textContent||d.innerText||''}
 SakuraCatalog.ask(q,{id:id}).then(function(d){
  var a=d.Media,t=a.title.english||a.title.romaji||a.title.native,esc=SakuraCatalog.esc,desc=esc(plain(a.description||'No synopsis available.'));document.title=t+' | SakuraAir';
  var studios=(a.studios.nodes||[]).map(function(x){return x.name}).join(', '),season=a.season&&a.seasonYear?label(a.season)+' '+a.seasonYear:'',aliases=(a.synonyms||[]).filter(Boolean).slice(0,5).join(' · ');
