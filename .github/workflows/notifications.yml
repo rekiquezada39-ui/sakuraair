@@ -56,3 +56,5 @@ jobs:
         run: npx wrangler deploy
 
 # Redeploy after Cloudflare permission update
+
+# Retry after D1 creation
