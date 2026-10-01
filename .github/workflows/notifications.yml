@@ -34,11 +34,14 @@ jobs:
             exit $CODE
           fi
           printf '%s' "$OUT" > /tmp/d1.json
-          ID=$(node -e "let s=require('fs').readFileSync('/tmp/d1.json','utf8'),a=JSON.parse(s);a=Array.isArray(a)?a:(a.result||a.results||[]);let x=a.find(v=>v.name==='sakuraair-notifications');if(x)process.stdout.write(x.uuid||x.id||'')")
+          ID=$(node -e "let s=require('fs').readFileSync('/tmp/d1.json','utf8'),a=JSON.parse(s);a=Array.isArray(a)?a:(a.result||a.results||[]);let x=a.find(v=>(v.name||v.database_name)==='sakuraair-notifications');if(x)process.stdout.write(x.uuid||x.id||'')")
           if [ -z "$ID" ]; then
-            npx wrangler d1 create sakuraair-notifications
-            npx wrangler d1 list --json > /tmp/d1.json
-            ID=$(node -e "let a=JSON.parse(require('fs').readFileSync('/tmp/d1.json','utf8'));a=Array.isArray(a)?a:(a.result||a.results||[]);let x=a.find(v=>v.name==='sakuraair-notifications');if(!x)process.exit(2);process.stdout.write(x.uuid||x.id)")
+            CREATE=$(npx wrangler d1 create sakuraair-notifications 2>&1) || { echo "::error title=D1 creation failed::${CREATE//$'\n'/' '}"; exit 1; }
+            ID=$(printf '%s' "$CREATE" | sed -n 's/.*database_id = "\([^"]*\)".*/\1/p' | head -1)
+            if [ -z "$ID" ]; then
+              echo "::error title=D1 ID missing::Database was created but Wrangler did not return its ID."
+              exit 1
+            fi
           fi
           sed -i "s/REPLACE_D1_ID/$ID/" wrangler.toml
           npx wrangler d1 execute sakuraair-notifications --remote --file schema.sql
