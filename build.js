@@ -838,7 +838,7 @@ var END='https://graphql.anilist.co',timer=0,seq=0;
 function esc(x){return String(x||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}
 function ask(query,variables){return fetch(END,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({query:query,variables:variables})}).then(function(r){if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(function(j){if(j.errors)throw Error(j.errors[0].message);return j.data})}
 var F='id title{romaji english native} coverImage{large medium} format status seasonYear episodes averageScore genres';
-window.SakuraCatalog={esc:esc,ask:ask,F:F,card:function(a){var t=a.title.english||a.title.romaji||a.title.native||'Untitled';return '<a class="card" href="anime-info?id='+a.id+'"><div class="im">'+(a.coverImage&&a.coverImage.large?'<img src="'+esc(a.coverImage.large)+'" alt="'+esc(t)+' cover" loading="lazy">':'<div class="ph">'+esc(t.charAt(0))+'</div>')+(a.averageScore?'<span class="sc">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'</div><div class="bd"><div class="nm">'+esc(t)+'</div><span class="tm" style="animation:none">'+esc([a.format,a.seasonYear,a.episodes?a.episodes+' eps':''].filter(Boolean).join(' · ')||'Anime')+'</span></div></a>'},load:function(q,page,done,fail){var my=++seq;var query='query($page:Int,$search:String){Page(page:$page,perPage:24){pageInfo{currentPage hasNextPage total}media(type:ANIME,isAdult:false,search:$search,sort:POPULARITY_DESC){'+F+'}}}';ask(query,{page:page,search:q||undefined}).then(function(d){if(my===seq)done(d.Page)}).catch(fail)}};
+window.SakuraCatalog={esc:esc,ask:ask,F:F,card:function(a){var t=a.title.english||a.title.romaji||a.title.native||'Untitled';return '<a class="card" href="anime-info?rev=clean2&id='+a.id+'"><div class="im">'+(a.coverImage&&a.coverImage.large?'<img src="'+esc(a.coverImage.large)+'" alt="'+esc(t)+' cover" loading="lazy">':'<div class="ph">'+esc(t.charAt(0))+'</div>')+(a.averageScore?'<span class="sc">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'</div><div class="bd"><div class="nm">'+esc(t)+'</div><span class="tm" style="animation:none">'+esc([a.format,a.seasonYear,a.episodes?a.episodes+' eps':''].filter(Boolean).join(' · ')||'Anime')+'</span></div></a>'},load:function(q,page,done,fail){var my=++seq;var query='query($page:Int,$search:String){Page(page:$page,perPage:24){pageInfo{currentPage hasNextPage total}media(type:ANIME,isAdult:false,search:$search,sort:POPULARITY_DESC){'+F+'}}}';ask(query,{page:page,search:q||undefined}).then(function(d){if(my===seq)done(d.Page)}).catch(fail)}};
 })();
 <\/script>`;
 const catalogBody=`<p class="crumb"><a href="./">Home</a> › All anime</p><h1>All anime</h1><p class="sub">Search the complete AniList anime database — finished series, movies, upcoming titles and shows currently airing.</p><div class="finder"><label for="cq"><h3>Find any anime</h3></label><input id="cq" placeholder="Type any title..." autocomplete="off" autofocus><p id="cs" style="color:var(--tx2);font-size:.84rem;margin-top:9px">Popular anime</p></div><div id="cg" class="grid" style="margin-top:24px"></div><div style="display:flex;justify-content:center;gap:10px;margin-top:28px"><button class="btn g" id="prev" type="button">Previous</button><button class="btn" id="next" type="button">Next</button></div>${API_SCRIPT}<script>
@@ -855,7 +855,7 @@ var q='query($id:Int){Media(id:$id,type:ANIME){id idMal title{romaji english nat
 function date(x){if(!x||!x.year)return 'Unknown';return [x.year,String(x.month||1).padStart(2,'0'),String(x.day||1).padStart(2,'0')].join('-')}
 function label(x){return String(x||'Unknown').replace(/_/g,' ').toLowerCase().split(' ').map(function(w){return w?w.charAt(0).toUpperCase()+w.slice(1):w}).join(' ')}
 function fact(k,v){return v?'<div class="fact"><b>'+k+'</b><span>'+v+'</span></div>':''}
-function plain(x){var d=document.createElement('div');d.innerHTML=x||'';return d.textContent||d.innerText||''}
+function plain(x){var d=document.createElement('div');d.innerHTML=x||'';d.querySelectorAll('br').forEach(function(b){b.replaceWith(' ')});return (d.textContent||d.innerText||'').split('  ').join(' ').trim()}
 SakuraCatalog.ask(q,{id:id}).then(function(d){
  var a=d.Media,t=a.title.english||a.title.romaji||a.title.native,esc=SakuraCatalog.esc,desc=esc(plain(a.description||'No synopsis available.'));document.title=t+' | SakuraAir';
  var studios=(a.studios.nodes||[]).map(function(x){return x.name}).join(', '),season=a.season&&a.seasonYear?label(a.season)+' '+a.seasonYear:'',aliases=(a.synonyms||[]).filter(Boolean).slice(0,5).join(' · ');
@@ -1103,7 +1103,13 @@ try{
 
 f.writeFileSync(P.join(O,'_redirects'),'/index.html / 200\n');
 f.writeFileSync(P.join(O,'_headers'),
-`/*
+`/anime-info*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/catalog*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
