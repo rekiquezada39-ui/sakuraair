@@ -1,0 +1,14 @@
+name = "sakuraair-notifications"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+VAPID_PUBLIC_KEY = "BItEbKl1f0C5s9HT483dOtlcdq9O9sRFJGvA0DoYmR7GA4pUBtx0t3UK2mqMMHIhUj-KxaWryTyQKsQk_N1mYC4"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "sakuraair-notifications"
+database_id = "REPLACE_D1_ID"

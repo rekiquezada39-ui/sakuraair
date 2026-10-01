@@ -1,0 +1,45 @@
+name: Deploy notification service
+on:
+  push:
+    branches: [ arena/01a0f5e4-sakuraair ]
+    paths: [ 'notifications/**', '.github/workflows/notifications.yml' ]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: notifications
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: notifications/package-lock.json
+      - run: npm ci
+      - name: Create or find D1 database
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          ID=$(npx wrangler d1 list --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{let a=JSON.parse(s),x=a.find(v=>v.name==='sakuraair-notifications');if(x)process.stdout.write(x.uuid)})")
+          if [ -z "$ID" ]; then
+            ID=$(npx wrangler d1 create sakuraair-notifications --json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).d1_databases[0].database_id))")
+          fi
+          sed -i "s/REPLACE_D1_ID/$ID/" wrangler.toml
+          npx wrangler d1 execute sakuraair-notifications --remote --file schema.sql
+      - name: Derive and store VAPID key
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          PRIV=$(node -e "const c=require('crypto'),h=c.createHash('sha256').update(process.env.CLOUDFLARE_API_TOKEN+':sakuraair-vapid').digest();process.stdout.write(h.toString('base64url'))")
+          printf %s "$PRIV" | npx wrangler secret put VAPID_PRIVATE_KEY
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler deploy
