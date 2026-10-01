@@ -6,7 +6,7 @@ on:
     - cron: '0 10 * * *'
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ main, arena/01a0f5e4-sakuraair ]
 
 permissions:
   contents: write
