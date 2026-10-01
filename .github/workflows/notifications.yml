@@ -23,7 +23,7 @@ jobs:
       - name: Create or find D1 database
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: deefae979d0cd5a685e897ad8dec3ac4
         run: |
           set +e
           OUT=$(npx wrangler d1 list --json 2>&1)
@@ -45,14 +45,14 @@ jobs:
       - name: Derive and store VAPID key
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: deefae979d0cd5a685e897ad8dec3ac4
         run: |
           PRIV=$(node -e "const c=require('crypto'),h=c.createHash('sha256').update(process.env.CLOUDFLARE_API_TOKEN+':sakuraair-vapid').digest();process.stdout.write(h.toString('base64url'))")
           printf %s "$PRIV" | npx wrangler secret put VAPID_PRIVATE_KEY
       - name: Deploy Worker
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_ACCOUNT_ID: deefae979d0cd5a685e897ad8dec3ac4
         run: npx wrangler deploy
 
 # Redeploy after Cloudflare permission update
