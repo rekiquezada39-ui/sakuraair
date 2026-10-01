@@ -40,6 +40,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: deefae979d0cd5a685e897ad8dec3ac4
         run: npx wrangler deploy
+      - name: Report Worker URL
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          SUB=$(curl -fsS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/accounts/deefae979d0cd5a685e897ad8dec3ac4/workers/subdomain" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>process.stdout.write(JSON.parse(s).result.subdomain))")
+          echo "::notice title=Notification Worker URL::https://sakuraair-notifications.${SUB}.workers.dev"
 
 # Redeploy after Cloudflare permission update
 
