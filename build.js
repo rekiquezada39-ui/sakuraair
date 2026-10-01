@@ -534,23 +534,14 @@ window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekique
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
 <script>
 (function(){
- var URL='${DLINK}',CADA=2,c=0;
- try{var r=JSON.parse(localStorage.getItem('sa_dl')||'null');
-  if(!r||r.d!==new Date().getDate())r={d:new Date().getDate(),n:0};
-  c=r.n||0;
- }catch(e){}
- document.addEventListener('click',function(e){
-  try{
-   var t=e.target,stop=document.body;
-   while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;
-   if(!t||t===stop)return;
-   c++;
-   try{localStorage.setItem('sa_dl',JSON.stringify({d:new Date().getDate(),n:c}))}catch(x){}
-   if(c%CADA!==0)return;
-   var w=window.open(URL,'_blank','noopener');
-   if(w&&w.focus)try{w.focus()}catch(x){}
-  }catch(x){}
- },true);
+ var URL='${DLINK}',CADA=3,MAX=3,WINDOW=12*60*60*1000,state={at:Date.now(),clicks:0,ads:0};
+ try{var saved=JSON.parse(localStorage.getItem('sa_dl')||'null');if(saved&&Date.now()-(saved.at||0)<WINDOW)state={at:saved.at,clicks:saved.clicks||0,ads:saved.ads||0}}catch(e){}
+ function save(){try{localStorage.setItem('sa_dl',JSON.stringify(state))}catch(x){}}
+ document.addEventListener('click',function(e){try{
+  if(Date.now()-state.at>=WINDOW)state={at:Date.now(),clicks:0,ads:0};
+  var t=e.target,stop=document.body;while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;if(!t||t===stop||state.ads>=MAX)return;
+  state.clicks++;if(state.clicks%CADA!==0){save();return}state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(x){}
+ }catch(x){}},true);
 })();
 <\/script>
 `;
@@ -921,7 +912,7 @@ A.forEach(a=>{
 <p style="margin-top:14px;font-size:.88rem;color:var(--tx2)">${fFecha(a.at)} at ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC</p>
 </div>
 
-<div class="notifybox" id="alert-${a.id}"><div><div class="nt">Get notified when episode ${a.ep} airs</div><div class="ns">One alert on this device. No account needed.</div><div class="installhelp">On iPhone or iPad: tap Share, choose “Add to Home Screen,” open SakuraAir from the new icon, then try again.</div></div><button class="btn" type="button">Notify me</button></div><script>SakuraAlerts.mount(document.getElementById('alert-${a.id}'),{animeId:${a.id},title:${JSON.stringify(a.t)},episode:${a.ep},airingAt:${a.at}});<\/script>
+<div class="notifybox" id="alert-${a.id}"><div><div class="nt">Get notified when episode ${a.ep} airs</div><div class="ns">One alert on this device. No account needed.</div><div class="installhelp">On iPhone or iPad: tap Share, choose “Add to Home Screen,” open SakuraAir from the new icon, then try again.</div></div><button class="btn" type="button">Notify me</button></div><script>document.addEventListener('DOMContentLoaded',function(){SakuraAlerts.mount(document.getElementById('alert-${a.id}'),{animeId:${a.id},title:${JSON.stringify(a.t)},episode:${a.ep},airingAt:${a.at}})});<\/script>
 <div class="box rv"><h3>When does ${e(a.t)} episode ${a.ep} come out?</h3>
 <p><strong>${e(a.t)}</strong> releases <strong>episode ${a.ep}</strong> on <strong>${fFecha(a.at)}</strong>${a.studio?`. The series is animated by ${e(a.studio)}`:''}${a.eps?` and runs for ${a.eps} episodes`:''}.</p>
 <p>New episodes drop every <strong>${a.day}</strong>${a.dur?`, each around ${a.dur} minutes long`:''}. ${a.sc?`It currently holds a score of <strong>${(a.sc/10).toFixed(1)}/10</strong> with ${a.pop.toLocaleString('en-US')} people tracking it.`:''}</p>
