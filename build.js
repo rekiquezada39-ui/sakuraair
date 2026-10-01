@@ -534,14 +534,18 @@ window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekique
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
 <script>
 (function(){
- var URL='${DLINK}',CADA=3,MAX=3,WINDOW=12*60*60*1000,state={at:Date.now(),clicks:0,ads:0};
- try{var saved=JSON.parse(localStorage.getItem('sa_dl')||'null');if(saved&&Date.now()-(saved.at||0)<WINDOW)state={at:saved.at,clicks:saved.clicks||0,ads:saved.ads||0}}catch(e){}
- function save(){try{localStorage.setItem('sa_dl',JSON.stringify(state))}catch(x){}}
- document.addEventListener('click',function(e){try{
-  if(Date.now()-state.at>=WINDOW)state={at:Date.now(),clicks:0,ads:0};
-  var t=e.target,stop=document.body;while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;if(!t||t===stop||state.ads>=MAX)return;
-  state.clicks++;if(state.clicks%CADA!==0){save();return}state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(x){}
- }catch(x){}},true);
+ var URL='${DLINK}',KEY='sa_direct_cap_v2',CADA=3,MAX=3,WINDOW=12*60*60*1000,now=Date.now();
+ var state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};
+ function read(){try{var x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.expiresAt>Date.now()){state.startedAt=+x.startedAt||now;state.expiresAt=+x.expiresAt;state.clicks=Math.max(0,+x.clicks||0);state.ads=Math.min(MAX,Math.max(0,+x.ads||0));return true}}catch(e){}return false}
+ function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+ if(!read())save();
+ window.addEventListener('storage',function(e){if(e.key===KEY)read()});
+ document.addEventListener('click',function(){try{
+  now=Date.now();if(now>=state.expiresAt){state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};save()}
+  if(state.ads>=MAX)return;
+  state.clicks++;if(state.clicks%CADA!==0){save();return}
+  state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(e){}
+ }catch(e){}},true);
 })();
 <\/script>
 `;
