@@ -434,7 +434,7 @@ ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 <a href="${r}" class="lg">${LOGO}<span><span class="lgt">Sakura<em>Air</em></span><span class="jp">アニメ放送</span></span></a>
-<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
+<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}catalog">All anime</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
 <span class="upd">Updated ${HOY}</span>
 </div></header>
 <div class="scrim" id="scrim"></div>
@@ -690,7 +690,7 @@ A.forEach(a=>{
 const gens=Object.entries(byGen).filter(([,v])=>v.length>=3).sort((a,b)=>b[1].length-a[1].length);
 const studios=Object.entries(byStudio).filter(([,v])=>v.length>=2).sort((a,b)=>b[1].length-a[1].length);
 
-DRAWER=`<a href="">Airing now</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
+DRAWER=`<a href="">Airing now</a><a href="catalog">All anime</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
  DOW.map(d=>byDay[d]?`<a href="day-${s(d)}">${d}<span class="n">${byDay[d].length}</span></a>`:'').join('')+
  `<div class="dttl">Top genres</div>`+gens.slice(0,10).map(([g,v])=>`<a href="genre-${s(g)}">${g}<span class="n">${v.length}</span></a>`).join('');
 
@@ -820,10 +820,33 @@ document.getElementById('q').addEventListener('input',function(ev){
  o.innerHTML=h.length?'<div class="rows" style="margin-top:12px">'+h.map(function(a){
   return '<a class="row" href="anime/'+a[1]+'"><div class="in"><div class="t">'+a[0]+
    '</div><div class="s">Episode '+a[2]+'</div></div><div class="rt" data-at="'+a[3]+'"></div></a>'}).join('')+'</div>'
-  :'<p style="color:var(--tx2);font-size:.88rem;margin-top:11px">No anime found for "'+ev.target.value+'"</p>';
+  :'<p style="color:var(--tx2);font-size:.88rem;margin-top:11px">Not airing right now. <a style="color:var(--sk2);font-weight:700" href="catalog?q='+encodeURIComponent(ev.target.value)+'">Search the complete anime catalog →</a></p>';
 });
 <\/script>`));
 console.log('   ✓ homepage');
+
+// ── catalogo completo: busca todo AniList bajo demanda, no solo emisiones
+const API_SCRIPT=`<script>
+(function(){
+var END='https://graphql.anilist.co',timer=0,seq=0;
+function esc(x){return String(x||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}
+function ask(query,variables){return fetch(END,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({query:query,variables:variables})}).then(function(r){if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(function(j){if(j.errors)throw Error(j.errors[0].message);return j.data})}
+var F='id title{romaji english native} coverImage{large medium} format status seasonYear episodes averageScore genres';
+window.SakuraCatalog={esc:esc,ask:ask,F:F,card:function(a){var t=a.title.english||a.title.romaji||a.title.native||'Untitled';return '<a class="card" href="anime-info?id='+a.id+'"><div class="im">'+(a.coverImage&&a.coverImage.large?'<img src="'+esc(a.coverImage.large)+'" alt="'+esc(t)+' cover" loading="lazy">':'<div class="ph">'+esc(t.charAt(0))+'</div>')+(a.averageScore?'<span class="sc">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'</div><div class="bd"><div class="nm">'+esc(t)+'</div><span class="tm" style="animation:none">'+esc([a.format,a.seasonYear,a.episodes?a.episodes+' eps':''].filter(Boolean).join(' · ')||'Anime')+'</span></div></a>'},load:function(q,page,done,fail){var my=++seq;var query='query($page:Int,$search:String){Page(page:$page,perPage:24){pageInfo{currentPage hasNextPage total}media(type:ANIME,isAdult:false,search:$search,sort:POPULARITY_DESC){'+F+'}}}';ask(query,{page:page,search:q||undefined}).then(function(d){if(my===seq)done(d.Page)}).catch(fail)}};
+})();
+<\/script>`;
+const catalogBody=`<p class="crumb"><a href="./">Home</a> › All anime</p><h1>All anime</h1><p class="sub">Search the complete AniList anime database — finished series, movies, upcoming titles and shows currently airing.</p><div class="finder"><label for="cq"><h3>Find any anime</h3></label><input id="cq" placeholder="Type any title..." autocomplete="off" autofocus><p id="cs" style="color:var(--tx2);font-size:.84rem;margin-top:9px">Popular anime</p></div><div id="cg" class="grid" style="margin-top:24px"></div><div style="display:flex;justify-content:center;gap:10px;margin-top:28px"><button class="btn g" id="prev" type="button">Previous</button><button class="btn" id="next" type="button">Next</button></div>${API_SCRIPT}<script>
+(function(){var q=document.getElementById('cq'),g=document.getElementById('cg'),st=document.getElementById('cs'),page=1,timer;q.value=new URLSearchParams(location.search).get('q')||'';
+function load(){var v=q.value.trim();st.textContent='Searching the full catalog…';g.style.opacity='.45';SakuraCatalog.load(v,page,function(p){g.style.opacity='1';g.innerHTML=p.media.map(SakuraCatalog.card).join('');st.textContent=(v?'Results for “'+v+'”':'Popular anime')+' · '+p.total.toLocaleString()+' titles';document.getElementById('prev').disabled=page<=1;document.getElementById('next').disabled=!p.pageInfo.hasNextPage},function(){g.style.opacity='1';st.textContent='Could not reach AniList. Please try again.'})}
+q.addEventListener('input',function(){clearTimeout(timer);page=1;timer=setTimeout(load,350)});document.getElementById('prev').onclick=function(){if(page>1){page--;load();scrollTo(0,0)}};document.getElementById('next').onclick=function(){page++;load();scrollTo(0,0)};load()})();
+<\/script>`;
+f.writeFileSync(P.join(O,'catalog.html'),L(`All Anime Catalog & Search | ${N}`,'Search every anime in the AniList database, including finished, upcoming and currently airing titles.',DOM+'/catalog',catalogBody));
+
+const infoBody=`<p class="crumb"><a href="./">Home</a> › <a href="catalog">All anime</a> › Anime</p><div id="animeLoad" class="box">Loading anime…</div>${API_SCRIPT}<script>
+(function(){var id=Number(new URLSearchParams(location.search).get('id')),o=document.getElementById('animeLoad');if(!id){o.textContent='Anime not found.';return}var q='query($id:Int){Media(id:$id,type:ANIME){id idMal title{romaji english native} description(asHtml:false) coverImage{extraLarge large} bannerImage format status season seasonYear episodes duration averageScore genres startDate{year month day} endDate{year month day} studios(isMain:true){nodes{name}} nextAiringEpisode{episode airingAt}}}';SakuraCatalog.ask(q,{id:id}).then(function(d){var a=d.Media,t=a.title.english||a.title.romaji||a.title.native,esc=SakuraCatalog.esc,desc=esc((a.description||'No synopsis available.').replace(/<[^>]+>/g,' '));document.title=t+' | SakuraAir';o.className='';o.innerHTML='<div class="showhd"><div class="po"><img src="'+esc((a.coverImage||{}).extraLarge||(a.coverImage||{}).large||'')+'" alt="'+esc(t)+' cover"></div><div class="inf"><h1>'+esc(t)+'</h1><div class="jptitle">'+esc(a.title.native||a.title.romaji||'')+'</div><div class="meta">'+(a.averageScore?'<span class="gd">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'<span>'+esc((a.status||'').replace(/_/g,' '))+'</span><span>'+esc(a.format||'Anime')+'</span>'+(a.episodes?'<span>'+a.episodes+' eps</span>':'')+(a.seasonYear?'<span>'+a.seasonYear+'</span>':'')+'</div></div></div><h2>Synopsis</h2><div class="box">'+desc+'</div><h2>Genres</h2><div class="chips">'+(a.genres||[]).map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'+(a.nextAiringEpisode?'<h2>Next episode</h2><div class="box big"><h3>Episode '+a.nextAiringEpisode.episode+'</h3><p data-at="'+a.nextAiringEpisode.airingAt+'">Scheduled</p></div>':'')}).catch(function(){o.textContent='Could not load this anime. Please try again.'})})();
+<\/script>`;
+f.writeFileSync(P.join(O,'anime-info.html'),L(`Anime details | ${N}`,'Anime information, episodes, status and synopsis.',DOM+'/anime-info',infoBody,'',true));
+console.log('   ✓ complete AniList catalog + dynamic anime details');
 
 // ── fichas
 f.mkdirSync(P.join(O,'anime'),{recursive:true});
@@ -1083,7 +1106,7 @@ f.writeFileSync(P.join(O,'_headers'),
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 `);
 
-const U=['','schedule','season','genres','about','privacy','terms','contact']
+const U=['','catalog','schedule','season','genres','about','privacy','terms','contact']
  .concat(DOW.filter(d=>byDay[d]).map(d=>`day-${s(d)}`))
  .concat(gens.map(([g])=>`genre-${s(g)}`))
  .concat(A.map(a=>`anime/${a.slug}`));
