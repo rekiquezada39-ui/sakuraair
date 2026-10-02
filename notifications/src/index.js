@@ -13,10 +13,11 @@ async function sendOne(env,row){
  const sub=JSON.parse(row.subscription);
  const payload={title:`${row.title} is airing now`,body:`Episode ${row.episode} has just aired. Tap to see the updated schedule.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:row.url||'https://sakuraair.pages.dev/'};
  try{
-  const r=await sendPushNotification(sub,payload,{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY,ttl:86400,urgency:'high'});
-  if(r.status===404||r.status===410)await env.DB.prepare('DELETE FROM alerts WHERE endpoint=?').bind(row.endpoint).run();
-  return r.ok;
- }catch{return false}
+  return await sendPushNotification(sub,payload,{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY},{ttl:86400,urgency:'high'});
+ }catch(err){
+  if(err?.status===404||err?.status===410||err?.statusCode===404||err?.statusCode===410)await env.DB.prepare('DELETE FROM alerts WHERE endpoint=?').bind(row.endpoint).run();
+  return false
+ }
 }
 
 export default {
@@ -24,6 +25,7 @@ export default {
   if(request.method==='OPTIONS')return new Response(null,{status:204,headers:CORS});
   const u=new URL(request.url);
   if(u.pathname==='/health')return json({ok:true});
+  if(u.pathname==='/public-key')return json({publicKey:env.VAPID_PUBLIC_KEY});
   if(u.pathname==='/subscribe'&&request.method==='POST'){
    let b;try{b=await request.json()}catch{return json({error:'Invalid request'},400)}
    const s=b.subscription;
@@ -32,7 +34,7 @@ export default {
     VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(endpoint,anime_id) DO UPDATE SET subscription=excluded.subscription,title=excluded.title,episode=excluded.episode,airing_at=excluded.airing_at,url=excluded.url,created_at=excluded.created_at`)
     .bind(s.endpoint,JSON.stringify(s),+b.animeId,String(b.title||'Anime').slice(0,160),+b.episode,+b.airingAt,String(b.url||'https://sakuraair.pages.dev/').slice(0,500),Date.now()).run();
    // Confirmation push proves this device can receive alerts before the real premiere.
-   try{await sendPushNotification(s,{title:'Episode alert enabled',body:`We’ll notify you when episode ${+b.episode} of ${String(b.title||'this anime')} airs.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:String(b.url||'https://sakuraair.pages.dev/')},{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY,ttl:300,urgency:'normal'})}catch{}
+   try{await sendPushNotification(s,{title:'Episode alert enabled',body:`We’ll notify you when episode ${+b.episode} of ${String(b.title||'this anime')} airs.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:String(b.url||'https://sakuraair.pages.dev/')},{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY},{ttl:300,urgency:'normal'})}catch{}
    return json({ok:true});
   }
   if(u.pathname==='/unsubscribe'&&request.method==='POST'){

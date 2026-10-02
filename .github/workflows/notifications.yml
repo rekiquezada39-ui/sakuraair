@@ -32,7 +32,11 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: deefae979d0cd5a685e897ad8dec3ac4
         run: |
-          PRIV=$(node -e "const c=require('crypto'),h=c.createHash('sha256').update(process.env.CLOUDFLARE_API_TOKEN+':sakuraair-vapid').digest();process.stdout.write(h.toString('base64url'))")
+          node - <<'JS' > /tmp/vapid.env
+          const c=require('crypto'),p=c.createHash('sha256').update(process.env.CLOUDFLARE_API_TOKEN+':sakuraair-vapid').digest(),e=c.createECDH('prime256v1');e.setPrivateKey(p);console.log('PRIV='+p.toString('base64url'));console.log('PUB='+e.getPublicKey(null,'uncompressed').toString('base64url'))
+          JS
+          . /tmp/vapid.env
+          sed -i "s|VAPID_PUBLIC_KEY = .*|VAPID_PUBLIC_KEY = \"$PUB\"|" wrangler.toml
           printf %s "$PRIV" | npx wrangler secret put VAPID_PRIVATE_KEY
       - name: Deploy Worker
         env:
