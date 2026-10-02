@@ -1105,7 +1105,15 @@ try{
 f.writeFileSync(P.join(O,'sw.js'),`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('push',e=>{let d={};try{d=e.data.json()}catch(x){d={title:'SakuraAir',body:'A new episode is airing.'}}e.waitUntil(self.registration.showNotification(d.title||'SakuraAir',{body:d.body||'',icon:d.icon||'/icon-192.png',badge:d.badge||'/favicon.ico',data:{url:d.url||'/'},tag:'sakuraair-episode',renotify:true}))});self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.openWindow(e.notification.data.url||'/'))});`);
 f.writeFileSync(P.join(O,'_redirects'),'/index.html / 200\n');
 f.writeFileSync(P.join(O,'_headers'),
-`/anime-info*
+`/sitemap.xml
+  Content-Type: application/xml; charset=UTF-8
+  Cache-Control: public, max-age=300, must-revalidate
+
+/robots.txt
+  Content-Type: text/plain; charset=UTF-8
+  Cache-Control: public, max-age=300, must-revalidate
+
+/anime-info*
   Cache-Control: no-store, no-cache, must-revalidate
 
 /catalog*
