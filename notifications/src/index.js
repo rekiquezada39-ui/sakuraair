@@ -34,8 +34,9 @@ export default {
     VALUES(?,?,?,?,?,?,?,?) ON CONFLICT(endpoint,anime_id) DO UPDATE SET subscription=excluded.subscription,title=excluded.title,episode=excluded.episode,airing_at=excluded.airing_at,url=excluded.url,created_at=excluded.created_at`)
     .bind(s.endpoint,JSON.stringify(s),+b.animeId,String(b.title||'Anime').slice(0,160),+b.episode,+b.airingAt,String(b.url||'https://sakuraair.pages.dev/').slice(0,500),Date.now()).run();
    // Confirmation push proves this device can receive alerts before the real premiere.
-   try{await sendPushNotification(s,{title:'Episode alert enabled',body:`We’ll notify you when episode ${+b.episode} of ${String(b.title||'this anime')} airs.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:String(b.url||'https://sakuraair.pages.dev/')},{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY},{ttl:300,urgency:'normal'})}catch{}
-   return json({ok:true});
+   let confirmation=false;
+   try{confirmation=await sendPushNotification(s,{title:'Episode alert enabled',body:+b.episode>0?`We’ll notify you when episode ${+b.episode} of ${String(b.title||'this anime')} airs.`:`We’ll notify you when the next episode of ${String(b.title||'this anime')} is scheduled.`,icon:'https://sakuraair.pages.dev/icon-192.png',badge:'https://sakuraair.pages.dev/favicon.ico',url:String(b.url||'https://sakuraair.pages.dev/')},{subject:'mailto:contact.sakuraair@gmail.com',publicKey:env.VAPID_PUBLIC_KEY,privateKey:env.VAPID_PRIVATE_KEY},{ttl:300,urgency:'high'})}catch(err){console.error('confirmation push failed',err)}
+   return json({ok:true,confirmation});
   }
   if(u.pathname==='/unsubscribe'&&request.method==='POST'){
    let b;try{b=await request.json()}catch{return json({error:'Invalid request'},400)}
@@ -52,7 +53,11 @@ export default {
  async scheduled(event,env,ctx){
   ctx.waitUntil((async()=>{
    const now=Math.floor(Date.now()/1000);
-   const {results=[]}=await env.DB.prepare('SELECT * FROM alerts WHERE airing_at<=? ORDER BY airing_at LIMIT 200').bind(now).all();
+   if(Math.floor(now/60)%15===0){
+    const {results:waiting=[]}=await env.DB.prepare('SELECT DISTINCT anime_id FROM alerts WHERE episode=0 LIMIT 20').all();
+    for(const item of waiting){try{const q='query($id:Int){Media(id:$id,type:ANIME){nextAiringEpisode{episode airingAt}}}',r=await fetch('https://graphql.anilist.co',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({query:q,variables:{id:item.anime_id}})}),j=await r.json(),n=j?.data?.Media?.nextAiringEpisode;if(n)await env.DB.prepare('UPDATE alerts SET episode=?,airing_at=? WHERE anime_id=? AND episode=0').bind(n.episode,n.airingAt,item.anime_id).run()}catch{}}
+   }
+   const {results=[]}=await env.DB.prepare('SELECT * FROM alerts WHERE airing_at<=? AND episode>0 ORDER BY airing_at LIMIT 200').bind(now).all();
    for(const row of results){
     const delivered=await sendOne(env,row);
     if(delivered)await env.DB.prepare('DELETE FROM alerts WHERE endpoint=? AND anime_id=?').bind(row.endpoint,row.anime_id).run();
