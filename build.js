@@ -13,6 +13,7 @@ const strip=h=>String(h||'').replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,' ').rep
 
 const HIST='history.json';
 const HOY_ISO=new Date().toISOString().slice(0,10);
+const ASSET_VER=Date.now().toString(36);
 const MESES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DIAS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const fFecha=ts=>{const d=new Date(ts*1000);
@@ -443,7 +444,7 @@ const PETALOS=(()=>{let h='<div class="petals" aria-hidden="true">';
      `<b style="animation-duration:${gr}s;animation-delay:-${de}s"></b></i>`});
  return h+'</div>'})();
 
-const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css"></head><body>
+const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css?v=${ASSET_VER}"></head><body>
 ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -1146,7 +1147,7 @@ f.writeFileSync(P.join(O,'_headers'),
   Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=86400
 
 /s.css
-  Cache-Control: public, max-age=3600, stale-while-revalidate=604800
+  Cache-Control: no-cache, must-revalidate
 /bg.webp
   Cache-Control: public, max-age=604800, immutable
 /girl.webp
