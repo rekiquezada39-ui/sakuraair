@@ -444,7 +444,7 @@ const PETALOS=(()=>{let h='<div class="petals" aria-hidden="true">';
      `<b style="animation-duration:${gr}s;animation-delay:-${de}s"></b></i>`});
  return h+'</div>'})();
 
-const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css?v=${ASSET_VER}"></head><body>
+const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css?v=${ASSET_VER}"></head><body>
 ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
@@ -733,12 +733,12 @@ console.log('📄 Generating HTML:');
 // ── componentes
 const img=a=>a.img?`<img src="${e(a.img)}" alt="${e(a.t)} cover" loading="lazy" width="184" height="276">`
  :`<div class="ph">${e(a.t.slice(0,1))}</div>`;
-const card=(a,r='')=>`<a class="card" href="${r}anime/${a.slug}">
+const card=(a,r='')=>`<a class="card" href="${r}anime/${a.slug}?v=${ASSET_VER}">
 <div class="im">${img(a)}<span class="ep">EP ${a.ep}</span>${a.sc?`<span class="sc">★ ${(a.sc/10).toFixed(1)}</span>`:''}</div>
 <div class="bd"><div class="nm">${e(a.t)}</div>
 <span class="tm${a.at-Math.floor(Date.now()/1000)<86400?' soon':''}" data-at="${a.at}">${cuenta(a.at-Math.floor(Date.now()/1000))}</span></div></a>`;
 const grid=(arr,r='')=>`<div class="grid">${arr.map(a=>card(a,r)).join('')}</div>`;
-const row=(a,r='')=>`<a class="row" href="${r}anime/${a.slug}">
+const row=(a,r='')=>`<a class="row" href="${r}anime/${a.slug}?v=${ASSET_VER}">
 <div class="th">${img(a)}</div>
 <div class="in"><div class="t">${e(a.t)}</div><div class="s">Episode ${a.ep}${a.studio?' · '+e(a.studio):''}</div></div>
 <div class="rt" data-at="${a.at}">${cuenta(a.at-Math.floor(Date.now()/1000))}</div></a>`;
@@ -1141,7 +1141,7 @@ f.writeFileSync(P.join(O,'_headers'),
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
-  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /*.json
   Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=86400
