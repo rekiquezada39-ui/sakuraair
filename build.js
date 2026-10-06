@@ -361,6 +361,8 @@ h3{font-size:1.08rem;font-weight:700;letter-spacing:-.022em}
  .rv.on{animation:slideUp .62s cubic-bezier(.16,1,.3,1) both}
 }
 
+/* ══ ANIME GAME ══ */
+.gameShell{max-width:1040px;margin:0 auto;padding:42px 24px 72px}.gameHero{text-align:center;margin-bottom:24px}.gameHero h1{font-size:clamp(2rem,6vw,3.4rem);letter-spacing:-.05em}.gameHero p{color:var(--tx2);margin:8px auto;max-width:620px}.modeTabs{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:22px 0}.modeTab{border:1px solid var(--bd);background:#fff;color:var(--tx2);font:inherit;font-weight:700;padding:10px 17px;border-radius:999px;cursor:pointer}.modeTab.on{background:var(--tx);color:#fff;border-color:var(--tx)}.gameBoard{display:grid;grid-template-columns:minmax(260px,420px) minmax(280px,1fr);gap:30px;align-items:center;background:rgba(255,255,255,.78);border:1px solid var(--bd);border-radius:24px;padding:24px;box-shadow:0 16px 50px var(--sh)}.gameArt{width:100%;max-width:420px;aspect-ratio:2/3;margin:auto;border-radius:17px;overflow:hidden;background:var(--bg2);box-shadow:0 12px 32px rgba(43,32,40,.16)}.gameArt canvas{display:block;width:100%;height:100%}.gamePanel h2{font-size:1.5rem}.gameMeta{color:var(--sk2);font-size:.78rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}.lives{display:flex;gap:6px;margin:15px 0}.life{width:28px;height:7px;background:var(--sk);border-radius:8px}.life.off{background:var(--bd)}.guessRow{display:flex;gap:8px}.guessRow input{min-width:0;flex:1;border:1px solid var(--bd);background:#fff;padding:13px 14px;border-radius:12px;font:inherit;outline:0}.guessRow input:focus{border-color:var(--sk2);box-shadow:0 0 0 3px var(--sk3)}.gameMsg{min-height:48px;margin:13px 0;color:var(--tx2)}.gameMsg strong{color:var(--tx)}.gameStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}.gameStat{text-align:center;padding:11px 5px;background:var(--bg2);border-radius:11px}.gameStat b{display:block;font-size:1.2rem}.gameStat span{font-size:.7rem;color:var(--tx2)}.timer{font-size:2rem;font-weight:800;letter-spacing:-.04em}.gameActions{display:flex;gap:8px;flex-wrap:wrap}.gameNote{text-align:center;color:var(--tx2);font-size:.8rem;margin-top:16px}@media(max-width:720px){.gameShell{padding:28px 14px 60px}.gameBoard{grid-template-columns:1fr;padding:14px;gap:19px}.gameArt{width:min(100%,340px)}.gamePanel{text-align:center}.guessRow{flex-direction:column}.gameActions{justify-content:center}.lives{justify-content:center}}
 /* ══ FOOTER ══ */
 footer{border-top:1px solid var(--bd);margin-top:70px;padding:40px 24px 48px;
  font-size:.85rem;color:var(--tx2);background:var(--bg2);position:relative}
@@ -449,7 +451,7 @@ ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 <a href="${r}" class="lg">${LOGO}<span><span class="lgt">Sakura<em>Air</em></span><span class="jp">アニメ放送</span></span></a>
-<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}catalog">All anime</a><a href="${r}my-anime">My Anime</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
+<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}catalog">All anime</a><a href="${r}my-anime">My Anime</a><a href="${r}anime-game">Anime Game</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
 <span class="upd">Updated ${HOY}</span>
 </div></header>
 <div class="scrim" id="scrim"></div>
@@ -651,6 +653,7 @@ media(type:ANIME,status:RELEASING,sort:POPULARITY_DESC){
  nextAiringEpisode{episode airingAt timeUntilAiring}
  studios(isMain:true){nodes{name}}
  externalLinks{site url}
+ characters(perPage:3,sort:ROLE){nodes{id name{full} image{large}}}
 }}}`;
 
 let ANIME=[],page=1;
@@ -682,6 +685,7 @@ const A=ANIME.map(a=>({
  ep:a.nextAiringEpisode.episode,
  at:a.nextAiringEpisode.airingAt,
  studio:a.studios?.nodes?.[0]?.name||'',
+ chars:(a.characters?.nodes||[]).filter(c=>c.image?.large&&c.name?.full).map(c=>({id:c.id,n:c.name.full,img:c.image.large})),
  links:(a.externalLinks||[]).filter(l=>['Crunchyroll','Netflix','Hulu','Funimation','HIDIVE','Official Site'].includes(l.site)).slice(0,3)
 })).sort((x,y)=>x.at-y.at);
 
@@ -706,7 +710,7 @@ A.forEach(a=>{
 const gens=Object.entries(byGen).filter(([,v])=>v.length>=3).sort((a,b)=>b[1].length-a[1].length);
 const studios=Object.entries(byStudio).filter(([,v])=>v.length>=2).sort((a,b)=>b[1].length-a[1].length);
 
-DRAWER=`<a href="">Airing now</a><a href="catalog">All anime</a><a href="my-anime">My Anime</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
+DRAWER=`<a href="">Airing now</a><a href="catalog">All anime</a><a href="my-anime">My Anime</a><a href="anime-game">Anime Game</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
  DOW.map(d=>byDay[d]?`<a href="day-${s(d)}">${d}<span class="n">${byDay[d].length}</span></a>`:'').join('')+
  `<div class="dttl">Top genres</div>`+gens.slice(0,10).map(([g,v])=>`<a href="genre-${s(g)}">${g}<span class="n">${v.length}</span></a>`).join('');
 
@@ -863,6 +867,27 @@ f.writeFileSync(P.join(O,'catalog.html'),L(`All Anime Catalog & Search | ${N}`,'
 const myAnimeBody=`<p class="crumb"><a href="./">Home</a> › My Anime</p><h1>My Anime</h1><p class="sub">Your personal anime schedule, saved on this device. No account needed.</p><div id="myList"></div><script>
 document.addEventListener('DOMContentLoaded',function(){var root=document.getElementById('myList');function esc(x){return String(x||'').replace(/[&<>\"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}function draw(){var list=Object.values(SakuraList.all()).sort(function(a,b){return(a.airingAt||9e12)-(b.airingAt||9e12)});if(!list.length){root.innerHTML='<div class="emptyState"><h3>Your list is empty</h3><p style="margin:8px 0 18px">Open any anime and select “Add to My Anime.”</p><a class="btn" href="catalog">Browse all anime</a></div>';return}var now=Date.now()/1000;root.innerHTML='<div class="grid">'+list.map(function(a){var upcoming=a.airingAt>now,done=a.watchedEp===a.episode&&a.episode;return '<article class="card"><a href="'+esc(a.url)+'"><div class="im">'+(a.img?'<img src="'+esc(a.img)+'" alt="'+esc(a.title)+' cover" loading="lazy">':'<div class="ph">'+esc(a.title.charAt(0))+'</div>')+(a.episode?'<span class="ep">EP '+a.episode+'</span>':'')+'</div></a><div class="bd"><div class="nm">'+esc(a.title)+'</div><span class="tm" style="animation:none">'+(upcoming?'Upcoming episode '+a.episode:(a.episode?'Episode '+a.episode:'Saved anime'))+'</span><div class="listactions">'+(a.episode?'<button class="miniBtn '+(done?'done':'')+'" data-watch="'+a.id+'" data-ep="'+a.episode+'">'+(done?'Watched':'Mark watched')+'</button>':'')+'<button class="miniBtn" data-remove="'+a.id+'">Remove</button></div></div></article>'}).join('')+'</div>';root.querySelectorAll('[data-remove]').forEach(function(b){b.onclick=function(){SakuraList.remove(+b.dataset.remove);draw()}});root.querySelectorAll('[data-watch]').forEach(function(b){b.onclick=function(){SakuraList.watched(+b.dataset.watch,+b.dataset.ep);draw()}})}draw()});<\/script>`;
 f.writeFileSync(P.join(O,'my-anime.html'),L(`My Anime — Personal Schedule | ${N}`,'Your personal anime watchlist and upcoming episode schedule, saved privately on your device.',DOM+'/my-anime',myAnimeBody));
+
+// Daily cover, character and speedrun guessing game
+const gameAnime=A.filter(a=>a.img).map(a=>({id:a.id,n:a.t,img:a.img,y:a.season||'',g:a.gen.slice(0,2).join(', ')}));
+const gameChars=[];A.forEach(a=>(a.chars||[]).forEach(c=>{if(!gameChars.some(x=>x.id===c.id))gameChars.push({id:c.id,n:c.n,img:c.img,anime:a.t})}));
+const gameData=JSON.stringify({anime:gameAnime,chars:gameChars}).replace(/</g,'\\u003c');
+const gameBody=`<main class="gameShell"><section class="gameHero"><p class="gameMeta">A new challenge every day</p><h1>Guess the anime</h1><p>One clear piece. Five guesses. Every wrong answer removes another piece of the pixelated cover.</p></section><div class="modeTabs"><button class="modeTab on" data-mode="cover">Daily Cover</button><button class="modeTab" data-mode="character">Character</button><button class="modeTab" data-mode="speed">Speedrun</button></div><section class="gameBoard"><div class="gameArt"><canvas id="gameCanvas" width="600" height="900" aria-label="Partially pixelated anime image"></canvas></div><div class="gamePanel"><div class="gameMeta" id="gameMode">Daily cover</div><div class="timer" id="timer" hidden>90</div><h2 id="prompt">Which anime is this?</h2><div class="lives" id="lives" aria-label="Five guesses remaining"></div><div class="guessRow"><input id="guess" list="answers" autocomplete="off" placeholder="Type an anime title..."><datalist id="answers"></datalist><button class="btn" id="submit" type="button">Guess</button></div><div class="gameMsg" id="gameMsg">Look closely at the clear piece.</div><div class="gameActions"><button class="btn g" id="skip" type="button">Skip</button><button class="btn g" id="newGame" type="button" hidden>Play again</button></div><div class="gameStats"><div class="gameStat"><b id="played">0</b><span>Played</span></div><div class="gameStat"><b id="solved">0</b><span>Solved</span></div><div class="gameStat"><b id="streak">0</b><span>Streak</span></div><div class="gameStat"><b id="best">0</b><span>Best</span></div></div></div></section><p class="gameNote">Progress and statistics are saved only on this device.</p></main><script id="gameData" type="application/json">${gameData}<\/script><script>
+(function(){'use strict';var D=JSON.parse(document.getElementById('gameData').textContent),mode='cover',item,tries=0,reveals=[],over=false,speedScore=0,tick=null,img=new Image(),c=document.getElementById('gameCanvas'),x=c.getContext('2d'),input=document.getElementById('guess'),msg=document.getElementById('gameMsg'),list=document.getElementById('answers');img.crossOrigin='anonymous';
+function hash(v){var h=2166136261;for(var i=0;i<v.length;i++)h=Math.imul(h^v.charCodeAt(i),16777619);return h>>>0}function rng(seed){return function(){seed=(Math.imul(seed,1664525)+1013904223)>>>0;return seed/4294967296}}
+function pool(){return mode==='character'?D.chars:D.anime}function day(){return new Date().toISOString().slice(0,10)}function pick(){var p=pool(),seed=mode==='speed'?Date.now()+speedScore:hash(day()+mode);return p[Math.floor(rng(seed)()*p.length)]}
+function pieces(){var r=rng(hash(String(item.id)+day())),a=[];while(a.length<6){var q=Math.floor(r()*24);if(!a.includes(q))a.push(q)}return a}
+function paint(){if(!img.complete||!img.naturalWidth)return;var W=c.width,H=c.height,iw=img.naturalWidth,ih=img.naturalHeight,sc=Math.max(W/iw,H/ih),sw=W/sc,sh=H/sc,sx=(iw-sw)/2,sy=(ih-sh)/2;x.imageSmoothingEnabled=false;var t=document.createElement('canvas');t.width=30;t.height=45;var q=t.getContext('2d');q.drawImage(img,sx,sy,sw,sh,0,0,30,45);x.drawImage(t,0,0,30,45,0,0,W,H);x.imageSmoothingEnabled=true;var cells=pieces(),count=Math.min(1+tries,6);for(var i=0;i<count;i++){var z=cells[i],col=z%4,row=Math.floor(z/4),cw=W/4,ch=H/6;x.drawImage(img,sx+col*sw/4,sy+row*sh/6,sw/4,sh/6,col*cw,row*ch,cw,ch)}}
+function stats(){var o={played:0,solved:0,streak:0,best:0};try{o=Object.assign(o,JSON.parse(localStorage.sa_anime_game_stats||'{}'))}catch(e){}return o}function showStats(o){['played','solved','streak','best'].forEach(k=>document.getElementById(k).textContent=o[k])}function save(win){if(mode==='speed')return;var o=stats();o.played++;if(win){o.solved++;o.streak++;o.best=Math.max(o.best,o.streak)}else o.streak=0;localStorage.sa_anime_game_stats=JSON.stringify(o);showStats(o)}
+function lives(){document.getElementById('lives').innerHTML=Array.from({length:5},(_,i)=>'<i class="life '+(i<5-tries?'':'off')+'"></i>').join('')}
+function setup(){clearInterval(tick);over=false;tries=0;speedScore=0;item=pick();reveals=[];input.disabled=false;document.getElementById('submit').disabled=false;document.getElementById('newGame').hidden=true;document.getElementById('skip').hidden=false;document.getElementById('timer').hidden=mode!=='speed';document.getElementById('gameMode').textContent=mode==='cover'?'Daily cover':mode==='character'?'Character challenge':'90-second speedrun';document.getElementById('prompt').textContent=mode==='character'?'Which character is this?':'Which anime is this?';input.placeholder=mode==='character'?'Type a character name...':'Type an anime title...';list.innerHTML=pool().map(a=>'<option value="'+a.n.replace(/&/g,'&amp;').replace(/"/g,'&quot;')+'"></option>').join('');msg.textContent=mode==='speed'?'Guess as many as possible before time runs out.':'Look closely at the clear piece.';lives();load();if(mode==='speed'){var left=90,el=document.getElementById('timer');el.textContent=left;tick=setInterval(function(){el.textContent=--left;if(left<=0){clearInterval(tick);finish(false,'Time! You solved '+speedScore+'.')}},1000)}}
+function load(){img.onload=paint;img.onerror=function(){msg.textContent='This image could not load. Moving to another challenge.';item=pick();setTimeout(load,100)};img.src=item.img}
+function norm(v){return v.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]/g,'')}
+function finish(win,text){if(over)return;over=true;clearInterval(tick);paint();input.disabled=true;document.getElementById('submit').disabled=true;document.getElementById('skip').hidden=true;document.getElementById('newGame').hidden=false;msg.innerHTML=text||((win?'Correct! ':'The answer was ')+'<strong>'+item.n+'</strong>.');save(win)}
+function nextSpeed(){speedScore++;item=pick();tries=0;input.value='';lives();load();msg.textContent='Solved: '+speedScore}
+function guess(){if(over)return;var v=input.value.trim();if(!v){msg.textContent='Choose an answer first.';return}if(norm(v)===norm(item.n)){if(mode==='speed')nextSpeed();else finish(true);return}tries++;input.value='';lives();paint();if(tries>=5){if(mode==='speed'){msg.innerHTML='It was <strong>'+item.n+'</strong>. Next image…';setTimeout(function(){item=pick();tries=0;lives();load()},650)}else finish(false)}else msg.textContent='Not quite. Another clear piece has been revealed.'}
+document.getElementById('submit').onclick=guess;input.onkeydown=function(e){if(e.key==='Enter')guess()};document.getElementById('skip').onclick=function(){if(mode==='speed'){msg.innerHTML='Skipped: <strong>'+item.n+'</strong>';item=pick();tries=0;lives();load()}else{tries=5;lives();finish(false)}};document.getElementById('newGame').onclick=setup;document.querySelectorAll('.modeTab').forEach(b=>b.onclick=function(){document.querySelectorAll('.modeTab').forEach(z=>z.classList.remove('on'));b.classList.add('on');mode=b.dataset.mode;setup()});showStats(stats());setup()})();<\/script>`;
+f.writeFileSync(P.join(O,'anime-game.html'),L(`Anime Cover Guessing Game | ${N}`,'Guess anime covers and characters in five tries, or race through the 90-second speedrun.',DOM+'/anime-game',gameBody));
 
 const infoBody=`<p class="crumb"><a href="./">Home</a> › <a href="catalog">All anime</a> › Anime</p><div id="animeLoad" class="box">Loading anime…</div>${API_SCRIPT}<script>
 (function(){
@@ -1160,7 +1185,7 @@ f.writeFileSync(P.join(O,'_headers'),
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 `);
 
-const U=['','catalog','my-anime','schedule','season','genres','about','privacy','terms','contact']
+const U=['','catalog','my-anime','anime-game','schedule','season','genres','about','privacy','terms','contact']
  .concat(DOW.filter(d=>byDay[d]).map(d=>`day-${s(d)}`))
  .concat(gens.map(([g])=>`genre-${s(g)}`))
  .concat(A.map(a=>`anime/${a.slug}`));
