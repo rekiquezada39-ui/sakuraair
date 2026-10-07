@@ -544,7 +544,7 @@ window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekique
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
 <script>
 (function(){
- var URL='${DLINK}',KEY='sa_direct_cap_v2',CADA=1,MAX=3,WINDOW=12*60*60*1000,now=Date.now();
+ var URL='${DLINK}',KEY='sa_direct_cap_v2',CADA=3,MAX=3,WINDOW=12*60*60*1000,now=Date.now();
  var state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};
  function read(){try{var x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.expiresAt>Date.now()){state.startedAt=+x.startedAt||now;state.expiresAt=+x.expiresAt;state.clicks=Math.max(0,+x.clicks||0);state.ads=Math.min(MAX,Math.max(0,+x.ads||0));return true}}catch(e){}return false}
  function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
