@@ -550,8 +550,8 @@ window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekique
  function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
  if(!read())save();
  window.addEventListener('storage',function(e){if(e.key===KEY)read()});
- document.addEventListener('click',function(ev){try{
-  if(!ev.target.closest('a,button'))return;now=Date.now();if(now>=state.expiresAt){state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};save()}
+ document.addEventListener('click',function(){try{
+  now=Date.now();if(now>=state.expiresAt){state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};save()}
   if(state.ads>=MAX)return;
   state.clicks++;if(state.clicks%CADA!==0){save();return}
   state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(e){}
