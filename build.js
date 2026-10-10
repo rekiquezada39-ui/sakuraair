@@ -3,7 +3,7 @@ const f=require('fs'),P=require('path'),O='dist',z=require('zlib');
 const N='SakuraAir',DOM='https://sakuraair.pages.dev';
 const MAIL='contact.sakuraair@gmail.com';
 const MVERIFY='<meta name="monetag" content="20276d347c7d19d7d24cea04109c96d1"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">';
-const ZONAS=[['nap5k.com/tag.min.js','11489146']];   // In-Page Push
+const ZONAS=[['n6wxm.com/vignette.min.js','11970668']]; // Vignette ad
 const DLINK='https://omg10.com/4/11715261';          // Direct Link Monetag (nuevo, sakuraair)
 // ════════════════════════════════════
 const s=x=>String(x||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
@@ -13,6 +13,7 @@ const strip=h=>String(h||'').replace(/<[^>]*>/g,'').replace(/&[a-z]+;/g,' ').rep
 
 const HIST='history.json';
 const HOY_ISO=new Date().toISOString().slice(0,10);
+const ASSET_VER=Date.now().toString(36);
 const MESES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DIAS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const fFecha=ts=>{const d=new Date(ts*1000);
@@ -263,6 +264,12 @@ h3{font-size:1.08rem;font-weight:700;letter-spacing:-.022em}
 .chips a:hover{transform:translate3d(0,-3px,0);border-color:var(--sk);background:var(--sk3);
  box-shadow:0 8px 20px var(--sh)}
 .chips a .n{font-size:.75rem;color:var(--tx2);font-variant-numeric:tabular-nums}
+.chips>span{border:1px solid var(--bd);border-radius:13px;padding:12px 14px;font-size:.87rem;
+ font-weight:600;background:#fff;color:var(--tx)}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:22px 0}
+.fact{background:#fff;border:1px solid var(--bd2);border-radius:14px;padding:14px 16px}
+.fact b{display:block;color:var(--tx2);font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+.fact span{font-size:.9rem;font-weight:650}
 
 /* ══ FICHA ══ */
 .showhd{display:flex;gap:26px;margin-bottom:26px;flex-wrap:wrap}
@@ -305,10 +312,18 @@ h3{font-size:1.08rem;font-weight:700;letter-spacing:-.022em}
 /* ══ BUSCADOR ══ */
 .finder{background:linear-gradient(135deg,var(--sk3),#fdf0f6);border-radius:18px;padding:24px;
  margin-bottom:22px;border:1px solid var(--bd)}
-#q{width:100%;padding:14px 17px;border-radius:12px;border:1px solid var(--bd);font-size:16px;
+.finder input{width:100%;padding:14px 17px;border-radius:12px;border:1px solid var(--bd);font-size:16px;
  font-family:inherit;background:#fff;transition:border-color .2s,box-shadow .2s}
-#q:focus{outline:none;border-color:var(--sk2);box-shadow:0 0 0 4px rgba(232,127,168,.14)}
+.finder input:focus{outline:none;border-color:var(--sk2);box-shadow:0 0 0 4px rgba(232,127,168,.14)}
 #res{margin-top:13px}
+
+.notifybox{display:flex;align-items:center;justify-content:space-between;gap:18px;background:linear-gradient(135deg,#fff,#fdeef4);border:1px solid var(--bd);border-radius:18px;padding:20px 22px;margin:22px 0;box-shadow:0 8px 24px var(--sh)}
+.notifybox .nt{font-weight:750;margin-bottom:3px}.notifybox .ns{font-size:.84rem;color:var(--tx2)}.notifybox .btn.on{background:#fff;color:var(--sk2);border:1px solid var(--sk);box-shadow:none}.installhelp{display:none;margin-top:12px;padding:12px 14px;background:#fff;border:1px solid var(--bd);border-radius:12px;font-size:.84rem;color:var(--tx2)}.installhelp.on{display:block}@media(max-width:600px){.notifybox{align-items:stretch;flex-direction:column}.notifybox .btn{justify-content:center}}
+/* ══ MY ANIME ══ */
+.mybar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px}.savebtn.saved{background:linear-gradient(120deg,var(--sk2),#d9689a);color:#fff;border-color:transparent;box-shadow:0 6px 20px rgba(232,127,168,.28)}
+.personal{display:none;background:linear-gradient(135deg,#fff,#fdeef4);border:1px solid var(--bd);border-radius:20px;padding:22px 24px;margin:28px 0;box-shadow:0 10px 28px var(--sh)}.personal.on{display:block}.personal .phead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.personal .phead a{color:var(--sk2);font-size:.85rem;font-weight:700}.emptyState{text-align:center;padding:46px 20px;border:1px dashed var(--sk);border-radius:20px;background:linear-gradient(145deg,#fff,var(--sk3));color:var(--tx2)}
+.listactions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}.miniBtn{min-height:38px;border:1px solid var(--bd);background:linear-gradient(180deg,#fff,#fdf7fa);color:var(--tx2);border-radius:11px;padding:9px 10px;font:650 .76rem/1.15 inherit;cursor:pointer;box-shadow:0 3px 10px var(--sh);transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s,background .2s,color .2s,box-shadow .2s}.miniBtn:hover{transform:translateY(-2px);border-color:var(--sk);color:var(--sk2);box-shadow:0 7px 18px var(--sh)}.miniBtn:active{transform:scale(.97)}.miniBtn[data-watch]{background:linear-gradient(135deg,var(--sk3),#fff);border-color:#efcddd;color:var(--sk2)}.miniBtn[data-watch]:before{content:'✓';display:inline-block;margin-right:6px;font-weight:800}.miniBtn.done{background:linear-gradient(135deg,#e8f7ef,#f7fcf9);color:var(--ok);border-color:#bfe2d0;box-shadow:none}.miniBtn[data-remove]{background:#fff;color:var(--tx2)}.miniBtn[data-remove]:before{content:'×';display:inline-block;margin-right:6px;font-size:1rem;line-height:0;color:var(--sk2)}.miniBtn[data-remove]:hover{background:#fff5f8;border-color:#edbed1;color:#b75c82}
+@media(max-width:460px){.listactions{grid-template-columns:1fr}.personal{padding:18px}.personal .phead{align-items:flex-start;flex-direction:column}}
 
 /* ══ FAQ ══ */
 .faq details{border:1px solid var(--bd2);border-radius:14px;margin-bottom:9px;overflow:hidden;background:#fff}
@@ -429,12 +444,12 @@ const PETALOS=(()=>{let h='<div class="petals" aria-hidden="true">';
      `<b style="animation-duration:${gr}s;animation-delay:-${de}s"></b></i>`});
  return h+'</div>'})();
 
-const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css"></head><body>
+const HEAD=(t,d,c,r,nx,hp)=>`<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>${e(t)}</title><meta name="description" content="${e(d)}"><link rel="canonical" href="${c}">${nx?'<meta name="robots" content="noindex,follow">':''}${MVERIFY}<meta property="og:title" content="${e(t)}"><meta property="og:description" content="${e(d)}"><meta property="og:type" content="website"><meta property="og:url" content="${c}"><meta property="og:site_name" content="${N}"><meta property="og:locale" content="en_US"><meta property="og:image" content="${DOM}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="${e(t)}"><meta name="twitter:image" content="${DOM}/og.png"><meta name="theme-color" content="#fffbfd"><link rel="icon" href="${r}favicon.ico" sizes="32x32"><link rel="icon" type="image/svg+xml" href="${r}favicon.svg"><link rel="manifest" href="${r}manifest.json"><link rel="apple-touch-icon" href="${r}icon-192.png"><link rel="preconnect" href="https://s4.anilist.co">${hp?PRE:''}<link rel="stylesheet" href="${r}s.css?v=${ASSET_VER}"></head><body>
 ${PETALOS}
 <header><div class="hin">
 <button class="burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
 <a href="${r}" class="lg">${LOGO}<span><span class="lgt">Sakura<em>Air</em></span><span class="jp">アニメ放送</span></span></a>
-<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
+<nav class="hnav"><a href="${r}">Airing now</a><a href="${r}catalog">All anime</a><a href="${r}my-anime">My Anime</a><a href="${r}schedule">Schedule</a><a href="${r}season">This season</a><a href="${r}genres">Genres</a></nav>
 <span class="upd">Updated ${HOY}</span>
 </div></header>
 <div class="scrim" id="scrim"></div>
@@ -520,26 +535,27 @@ function tick2(){var now=Math.floor(Date.now()/1000);
  })}
 tick2();setInterval(tick2,1000);
 })();<\/script>
+<script>
+window.SakuraList=(function(){var KEY='sakura_my_anime_v1';function all(){try{return JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){return{}}}function put(a){var x=all();x[a.id]=Object.assign(x[a.id]||{},a,{savedAt:Date.now()});localStorage.setItem(KEY,JSON.stringify(x));return x[a.id]}function remove(id){var x=all();delete x[id];localStorage.setItem(KEY,JSON.stringify(x))}function has(id){return!!all()[id]}function toggle(button,a){if(has(a.id)){remove(a.id);button.classList.remove('saved');button.textContent='Add to My Anime'}else{put(a);button.classList.add('saved');button.textContent='Saved to My Anime'}}function mount(button,a){if(!button)return;if(has(a.id)){button.classList.add('saved');button.textContent='Saved to My Anime'}button.onclick=function(){toggle(button,a)}}function watched(id,ep){var x=all();if(!x[id])return false;x[id].watchedEp=x[id].watchedEp===ep?0:ep;localStorage.setItem(KEY,JSON.stringify(x));return x[id].watchedEp===ep}return{all:all,put:put,remove:remove,has:has,mount:mount,watched:watched}})();
+<\/script>
+<script>
+window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekiquezada39.workers.dev',PUB='';function key(s){var b=atob((s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/')),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}async function post(p,d){var r=await fetch(API+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw Error('Notification service unavailable');return r.json()}async function mount(el,m){if(!el)return;var b=el.querySelector('button'),h=el.querySelector('.installhelp');if(!('serviceWorker'in navigator)||!('PushManager'in window)){h.textContent='Push notifications are not supported on this browser.';h.classList.add('on');b.disabled=true;return}var r=await navigator.serviceWorker.register('/sw.js');if(!PUB){var pk=await fetch(API+'/public-key').then(function(x){return x.json()});PUB=pk.publicKey}var sub=await r.pushManager.getSubscription(),oldKey='';try{oldKey=localStorage.getItem('sa_vapid_public')||''}catch(x){}if(sub&&oldKey!==PUB){await sub.unsubscribe();sub=null}try{localStorage.setItem('sa_vapid_public',PUB)}catch(x){}if(sub){var st=await post('/status',{endpoint:sub.endpoint,animeId:m.animeId}).catch(function(){return{subscribed:false}});if(st.subscribed){b.classList.add('on');b.textContent='Notifications on'}}b.onclick=async function(){b.disabled=true;try{var sub=await r.pushManager.getSubscription();if(b.classList.contains('on')){await post('/unsubscribe',{endpoint:sub.endpoint,animeId:m.animeId});b.classList.remove('on');b.textContent='Notify me'}else{var ios=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;if(ios&&!standalone){h.classList.add('on');b.disabled=false;return}if(Notification.permission==='denied')throw Error('BLOCKED');var permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();if(permission!=='granted')throw Error('BLOCKED');sub=sub||await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key(PUB)});var saved=await post('/subscribe',{subscription:sub,animeId:m.animeId,title:m.title,episode:m.episode,airingAt:m.airingAt,url:location.href});if(!saved.confirmation)throw Error('The alert was saved, but this device did not accept the test notification. Check system notification settings and try again.');b.classList.add('on');b.textContent='Notifications on'}}catch(e){var blocked=Notification.permission==='denied'||e.message==='BLOCKED'||/permission denied/i.test(e.message);h.textContent=blocked?'Notifications are blocked for SakuraAir. Click the icon to the left of the address, allow Notifications, then reload this page.':e.message;h.classList.add('on');if(blocked){b.textContent='Notifications blocked';b.classList.add('on')}}b.disabled=false}}return{mount:mount}})();
+<\/script>
 <script>window.__ZONAS=${JSON.stringify(ZONAS)};<\/script>
 <script>
 (function(){
- var URL='${DLINK}',CADA=2,c=0;
- try{var r=JSON.parse(localStorage.getItem('sa_dl')||'null');
-  if(!r||r.d!==new Date().getDate())r={d:new Date().getDate(),n:0};
-  c=r.n||0;
- }catch(e){}
- document.addEventListener('click',function(e){
-  try{
-   var t=e.target,stop=document.body;
-   while(t&&t!==stop&&t.tagName!=='A'&&t.tagName!=='BUTTON')t=t.parentNode;
-   if(!t||t===stop)return;
-   c++;
-   try{localStorage.setItem('sa_dl',JSON.stringify({d:new Date().getDate(),n:c}))}catch(x){}
-   if(c%CADA!==0)return;
-   var w=window.open(URL,'_blank','noopener');
-   if(w&&w.focus)try{w.focus()}catch(x){}
-  }catch(x){}
- },true);
+ var URL='${DLINK}',KEY='sa_direct_cap_v2',CADA=3,MAX=3,WINDOW=12*60*60*1000,now=Date.now();
+ var state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};
+ function read(){try{var x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.expiresAt>Date.now()){state.startedAt=+x.startedAt||now;state.expiresAt=+x.expiresAt;state.clicks=Math.max(0,+x.clicks||0);state.ads=Math.min(MAX,Math.max(0,+x.ads||0));return true}}catch(e){}return false}
+ function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
+ if(!read())save();
+ window.addEventListener('storage',function(e){if(e.key===KEY)read()});
+ document.addEventListener('click',function(){try{
+  now=Date.now();if(now>=state.expiresAt){state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};save()}
+  if(state.ads>=MAX)return;
+  state.clicks++;if(state.clicks%CADA!==0){save();return}
+  state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(e){}
+ }catch(e){}},true);
 })();
 <\/script>
 `;
@@ -690,7 +706,7 @@ A.forEach(a=>{
 const gens=Object.entries(byGen).filter(([,v])=>v.length>=3).sort((a,b)=>b[1].length-a[1].length);
 const studios=Object.entries(byStudio).filter(([,v])=>v.length>=2).sort((a,b)=>b[1].length-a[1].length);
 
-DRAWER=`<a href="">Airing now</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
+DRAWER=`<a href="">Airing now</a><a href="catalog">All anime</a><a href="my-anime">My Anime</a><a href="schedule">Weekly schedule</a><a href="season">This season</a><a href="genres">All genres</a><div class="dsep"></div><div class="dttl">Days</div>`+
  DOW.map(d=>byDay[d]?`<a href="day-${s(d)}">${d}<span class="n">${byDay[d].length}</span></a>`:'').join('')+
  `<div class="dttl">Top genres</div>`+gens.slice(0,10).map(([g,v])=>`<a href="genre-${s(g)}">${g}<span class="n">${v.length}</span></a>`).join('');
 
@@ -717,12 +733,12 @@ console.log('📄 Generating HTML:');
 // ── componentes
 const img=a=>a.img?`<img src="${e(a.img)}" alt="${e(a.t)} cover" loading="lazy" width="184" height="276">`
  :`<div class="ph">${e(a.t.slice(0,1))}</div>`;
-const card=(a,r='')=>`<a class="card" href="${r}anime/${a.slug}">
+const card=(a,r='')=>`<a class="card" href="${r}anime/${a.slug}?v=${ASSET_VER}">
 <div class="im">${img(a)}<span class="ep">EP ${a.ep}</span>${a.sc?`<span class="sc">★ ${(a.sc/10).toFixed(1)}</span>`:''}</div>
 <div class="bd"><div class="nm">${e(a.t)}</div>
 <span class="tm${a.at-Math.floor(Date.now()/1000)<86400?' soon':''}" data-at="${a.at}">${cuenta(a.at-Math.floor(Date.now()/1000))}</span></div></a>`;
 const grid=(arr,r='')=>`<div class="grid">${arr.map(a=>card(a,r)).join('')}</div>`;
-const row=(a,r='')=>`<a class="row" href="${r}anime/${a.slug}">
+const row=(a,r='')=>`<a class="row" href="${r}anime/${a.slug}?v=${ASSET_VER}">
 <div class="th">${img(a)}</div>
 <div class="in"><div class="t">${e(a.t)}</div><div class="s">Episode ${a.ep}${a.studio?' · '+e(a.studio):''}</div></div>
 <div class="rt" data-at="${a.at}">${cuenta(a.at-Math.floor(Date.now()/1000))}</div></a>`;
@@ -773,6 +789,8 @@ ${hoy.length?rows(hoy.slice(0,10)):'<p class="sub">Nothing new airs today. Check
 <div class="finder rv" style="margin-top:34px"><h3 style="margin-bottom:11px">Find your anime</h3>
 <input id="q" placeholder="Type a title — Mushoku Tensei, Bleach, Grand Blue..." autocomplete="off" enterkeyhint="search">
 <div id="res"></div></div>
+<div class="personal" id="personalHome"><div class="phead"><h3>Your next episodes</h3><a href="my-anime">Open My Anime →</a></div><div id="personalRows"></div></div>
+<script>document.addEventListener('DOMContentLoaded',function(){var x=Object.values(SakuraList.all()).filter(function(a){return a.airingAt>Date.now()/1000}).sort(function(a,b){return a.airingAt-b.airingAt}).slice(0,5);if(!x.length)return;var box=document.getElementById('personalHome'),o=document.getElementById('personalRows');box.classList.add('on');o.innerHTML='<div class="rows">'+x.map(function(a){var left=Math.max(0,a.airingAt-Math.floor(Date.now()/1000)),d=Math.floor(left/86400),h=Math.floor(left%86400/3600);return '<a class="row" href="'+a.url+'"><div class="th">'+(a.img?'<img src="'+a.img+'" alt="">':'')+'</div><div class="in"><div class="t">'+a.title+'</div><div class="s">Episode '+a.episode+'</div></div><div class="rt">'+(d?d+'d '+h+'h':h+'h')+'</div></a>'}).join('')+'</div>'});<\/script>
 
 <h2 class="rv">Dropping next<a class="ver" href="schedule">Full schedule →</a></h2>
 ${grid(A.slice(0,12))}
@@ -820,10 +838,51 @@ document.getElementById('q').addEventListener('input',function(ev){
  o.innerHTML=h.length?'<div class="rows" style="margin-top:12px">'+h.map(function(a){
   return '<a class="row" href="anime/'+a[1]+'"><div class="in"><div class="t">'+a[0]+
    '</div><div class="s">Episode '+a[2]+'</div></div><div class="rt" data-at="'+a[3]+'"></div></a>'}).join('')+'</div>'
-  :'<p style="color:var(--tx2);font-size:.88rem;margin-top:11px">No anime found for "'+ev.target.value+'"</p>';
+  :'<p style="color:var(--tx2);font-size:.88rem;margin-top:11px">Not airing right now. <a style="color:var(--sk2);font-weight:700" href="catalog?q='+encodeURIComponent(ev.target.value)+'">Search the complete anime catalog →</a></p>';
 });
 <\/script>`));
 console.log('   ✓ homepage');
+
+// ── catalogo completo: busca todo AniList bajo demanda, no solo emisiones
+const API_SCRIPT=`<script>
+(function(){
+var END='https://graphql.anilist.co',timer=0,seq=0;
+function esc(x){return String(x||'').replace(/[&<>\"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}
+function ask(query,variables){return fetch(END,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify({query:query,variables:variables})}).then(function(r){if(!r.ok)throw Error('HTTP '+r.status);return r.json()}).then(function(j){if(j.errors)throw Error(j.errors[0].message);return j.data})}
+var F='id title{romaji english native} coverImage{large medium} format status seasonYear episodes averageScore genres';
+window.SakuraCatalog={esc:esc,ask:ask,F:F,card:function(a){var t=a.title.english||a.title.romaji||a.title.native||'Untitled';return '<a class="card" href="anime-info?rev=clean2&id='+a.id+'"><div class="im">'+(a.coverImage&&a.coverImage.large?'<img src="'+esc(a.coverImage.large)+'" alt="'+esc(t)+' cover" loading="lazy">':'<div class="ph">'+esc(t.charAt(0))+'</div>')+(a.averageScore?'<span class="sc">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'</div><div class="bd"><div class="nm">'+esc(t)+'</div><span class="tm" style="animation:none">'+esc([a.format,a.seasonYear,a.episodes?a.episodes+' eps':''].filter(Boolean).join(' · ')||'Anime')+'</span></div></a>'},load:function(q,page,done,fail){var my=++seq;var query='query($page:Int,$search:String){Page(page:$page,perPage:24){pageInfo{currentPage hasNextPage total}media(type:ANIME,isAdult:false,search:$search,sort:POPULARITY_DESC){'+F+'}}}';ask(query,{page:page,search:q||undefined}).then(function(d){if(my===seq)done(d.Page)}).catch(fail)}};
+})();
+<\/script>`;
+const catalogBody=`<p class="crumb"><a href="./">Home</a> › All anime</p><h1>All anime</h1><p class="sub">Search the complete AniList anime database — finished series, movies, upcoming titles and shows currently airing.</p><div class="finder"><label for="cq"><h3>Find any anime</h3></label><input id="cq" placeholder="Type any title..." autocomplete="off" autofocus><p id="cs" style="color:var(--tx2);font-size:.84rem;margin-top:9px">Popular anime</p></div><div id="cg" class="grid" style="margin-top:24px"></div><div style="display:flex;justify-content:center;gap:10px;margin-top:28px"><button class="btn g" id="prev" type="button">Previous</button><button class="btn" id="next" type="button">Next</button></div>${API_SCRIPT}<script>
+(function(){var q=document.getElementById('cq'),g=document.getElementById('cg'),st=document.getElementById('cs'),page=1,timer;q.value=new URLSearchParams(location.search).get('q')||'';
+function load(){var v=q.value.trim(),key=v.toLowerCase(),term=({'breaking the ice':'The Ramparts of Ice','rompiendo el hielo':'The Ramparts of Ice','koori no jouheki':'The Ramparts of Ice','koori no jyouheki':'The Ramparts of Ice'}[key]||v);st.textContent='Searching the full catalog…';g.style.opacity='.45';SakuraCatalog.load(term,page,function(p){g.style.opacity='1';g.innerHTML=p.media.map(SakuraCatalog.card).join('');st.textContent=(v?'Results for “'+v+'”':'Popular anime')+' · '+p.total.toLocaleString()+' titles';document.getElementById('prev').disabled=page<=1;document.getElementById('next').disabled=!p.pageInfo.hasNextPage},function(){g.style.opacity='1';st.textContent='Could not reach AniList. Please try again.'})}
+q.addEventListener('input',function(){clearTimeout(timer);page=1;timer=setTimeout(load,350)});document.getElementById('prev').onclick=function(){if(page>1){page--;load();scrollTo(0,0)}};document.getElementById('next').onclick=function(){page++;load();scrollTo(0,0)};load()})();
+<\/script>`;
+f.writeFileSync(P.join(O,'catalog.html'),L(`All Anime Catalog & Search | ${N}`,'Search every anime in the AniList database, including finished, upcoming and currently airing titles.',DOM+'/catalog',catalogBody));
+
+const myAnimeBody=`<p class="crumb"><a href="./">Home</a> › My Anime</p><h1>My Anime</h1><p class="sub">Your personal anime schedule, saved on this device. No account needed.</p><div id="myList"></div><script>
+document.addEventListener('DOMContentLoaded',function(){var root=document.getElementById('myList');function esc(x){return String(x||'').replace(/[&<>\"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]})}function draw(){var list=Object.values(SakuraList.all()).sort(function(a,b){return(a.airingAt||9e12)-(b.airingAt||9e12)});if(!list.length){root.innerHTML='<div class="emptyState"><h3>Your list is empty</h3><p style="margin:8px 0 18px">Open any anime and select “Add to My Anime.”</p><a class="btn" href="catalog">Browse all anime</a></div>';return}var now=Date.now()/1000;root.innerHTML='<div class="grid">'+list.map(function(a){var upcoming=a.airingAt>now,done=a.watchedEp===a.episode&&a.episode;return '<article class="card"><a href="'+esc(a.url)+'"><div class="im">'+(a.img?'<img src="'+esc(a.img)+'" alt="'+esc(a.title)+' cover" loading="lazy">':'<div class="ph">'+esc(a.title.charAt(0))+'</div>')+(a.episode?'<span class="ep">EP '+a.episode+'</span>':'')+'</div></a><div class="bd"><div class="nm">'+esc(a.title)+'</div><span class="tm" style="animation:none">'+(upcoming?'Upcoming episode '+a.episode:(a.episode?'Episode '+a.episode:'Saved anime'))+'</span><div class="listactions">'+(a.episode?'<button class="miniBtn '+(done?'done':'')+'" data-watch="'+a.id+'" data-ep="'+a.episode+'">'+(done?'Watched':'Mark watched')+'</button>':'')+'<button class="miniBtn" data-remove="'+a.id+'">Remove</button></div></div></article>'}).join('')+'</div>';root.querySelectorAll('[data-remove]').forEach(function(b){b.onclick=function(){SakuraList.remove(+b.dataset.remove);draw()}});root.querySelectorAll('[data-watch]').forEach(function(b){b.onclick=function(){SakuraList.watched(+b.dataset.watch,+b.dataset.ep);draw()}})}draw()});<\/script>`;
+f.writeFileSync(P.join(O,'my-anime.html'),L(`My Anime — Personal Schedule | ${N}`,'Your personal anime watchlist and upcoming episode schedule, saved privately on your device.',DOM+'/my-anime',myAnimeBody));
+
+const infoBody=`<p class="crumb"><a href="./">Home</a> › <a href="catalog">All anime</a> › Anime</p><div id="animeLoad" class="box">Loading anime…</div>${API_SCRIPT}<script>
+(function(){
+var id=Number(new URLSearchParams(location.search).get('id')),o=document.getElementById('animeLoad');if(!id){o.textContent='Anime not found.';return}
+var q='query($id:Int){Media(id:$id,type:ANIME){id idMal title{romaji english native} synonyms description(asHtml:false) coverImage{extraLarge large} bannerImage format status source season seasonYear episodes duration averageScore meanScore popularity favourites genres countryOfOrigin startDate{year month day} endDate{year month day} studios(isMain:true){nodes{name}} nextAiringEpisode{episode airingAt} trailer{id site thumbnail} externalLinks{site url type} relations{nodes{id type title{romaji english} coverImage{large} format status seasonYear episodes averageScore genres}} recommendations(sort:RATING_DESC,perPage:6){nodes{mediaRecommendation{id title{romaji english} coverImage{large} format status seasonYear episodes averageScore genres}}}}}';
+function date(x){if(!x||!x.year)return 'Unknown';return [x.year,String(x.month||1).padStart(2,'0'),String(x.day||1).padStart(2,'0')].join('-')}
+function label(x){return String(x||'Unknown').replace(/_/g,' ').toLowerCase().split(' ').map(function(w){return w?w.charAt(0).toUpperCase()+w.slice(1):w}).join(' ')}
+function fact(k,v){return v?'<div class="fact"><b>'+k+'</b><span>'+v+'</span></div>':''}
+function plain(x){var d=document.createElement('div');d.innerHTML=x||'';d.querySelectorAll('br').forEach(function(b){b.replaceWith(' ')});return (d.textContent||d.innerText||'').split('  ').join(' ').trim()}
+SakuraCatalog.ask(q,{id:id}).then(function(d){
+ var a=d.Media,t=a.title.english||a.title.romaji||a.title.native,esc=SakuraCatalog.esc,desc=esc(plain(a.description||'No synopsis available.'));document.title=t+' | SakuraAir';
+ var studios=(a.studios.nodes||[]).map(function(x){return x.name}).join(', '),season=a.season&&a.seasonYear?label(a.season)+' '+a.seasonYear:'',aliases=(a.synonyms||[]).filter(Boolean).slice(0,5).join(' · ');
+ var related=(a.relations.nodes||[]).filter(function(x){return x.type==='ANIME'}).slice(0,6),recs=(a.recommendations.nodes||[]).map(function(x){return x.mediaRecommendation}).filter(Boolean).slice(0,6);
+ var next='',alertMeta=null;if(a.nextAiringEpisode){var at=a.nextAiringEpisode.airingAt,dt=new Date(at*1000);alertMeta={animeId:a.id,title:t,episode:a.nextAiringEpisode.episode,airingAt:at};next='<h2>Next episode</h2><div class="box big"><h3>Episode '+a.nextAiringEpisode.episode+' airs in</h3><div class="bigcd"><div><div class="v">–</div><div class="l">Days</div></div><div><div class="v">–</div><div class="l">Hours</div></div><div><div class="v">–</div><div class="l">Minutes</div></div><div><div class="v">–</div><div class="l">Seconds</div></div></div><span data-at="'+at+'" data-f="full" style="display:none"></span><p style="margin-top:14px;font-size:.88rem;color:var(--tx2)">'+dt.toLocaleString(undefined,{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',timeZoneName:'short'})+'</p></div><div class="notifybox" id="dynamicAlert"><div><div class="nt">Get notified when episode '+a.nextAiringEpisode.episode+' airs</div><div class="ns">One alert on this device. No account needed.</div><div class="installhelp">On iPhone or iPad: add SakuraAir to your Home Screen first.</div></div><button class="btn" type="button">Notify me</button></div>'}else if(a.status==='RELEASING'||a.status==='NOT_YET_RELEASED'){alertMeta={animeId:a.id,title:t,episode:0,airingAt:2147483647};next='<div class="notifybox" id="dynamicAlert"><div><div class="nt">Get notified about the next episode</div><div class="ns">We will alert you when its release is scheduled.</div><div class="installhelp">On iPhone or iPad: add SakuraAir to your Home Screen first.</div></div><button class="btn" type="button">Notify me</button></div>'}else{alertMeta={animeId:a.id,title:t,episode:0,airingAt:2147483647};next='<div class="notifybox" id="dynamicAlert"><div><div class="nt">Notify me about the next release</div><div class="ns">We will watch this anime and its sequels for a new scheduled episode.</div><div class="installhelp">On iPhone or iPad: add SakuraAir to your Home Screen first.</div></div><button class="btn" type="button">Notify me</button></div>'}
+ var links=(a.externalLinks||[]).filter(function(x){return ['STREAMING','INFO'].indexOf(x.type)>-1}).slice(0,5);
+ o.className='';o.innerHTML='<div class="showhd"><div class="po"><img src="'+esc((a.coverImage||{}).extraLarge||(a.coverImage||{}).large||'')+'" alt="'+esc(t)+' cover"></div><div class="inf"><h1>'+esc(t)+'</h1><div class="jptitle">'+esc(a.title.native||a.title.romaji||'')+'</div><div class="meta">'+(a.averageScore?'<span class="gd">★ '+(a.averageScore/10).toFixed(1)+'</span>':'')+'<span class="'+(a.status==='RELEASING'?'on':'')+'">'+esc(label(a.status))+'</span><span>'+esc(label(a.format))+'</span>'+(a.episodes?'<span>'+a.episodes+' eps</span>':'')+(season?'<span>'+esc(season)+'</span>':'')+'</div>'+(aliases?'<p style="color:var(--tx2);font-size:.84rem"><strong>Also known as:</strong> '+esc(aliases)+'</p>':'')+'<div class="mybar"><button class="btn g savebtn" id="dynamicSave" type="button">Add to My Anime</button></div></div></div>'+next+'<h2>Synopsis</h2><div class="box desc">'+desc+'</div><h2>Anime information</h2><div class="facts">'+fact('Format',esc(label(a.format)))+fact('Status',esc(label(a.status)))+fact('Episodes',a.episodes||'Unknown')+fact('Episode length',a.duration?a.duration+' minutes':'Unknown')+fact('Season',esc(season||'Unknown'))+fact('Aired',esc(date(a.startDate)+' — '+date(a.endDate)))+fact('Studio',esc(studios||'Unknown'))+fact('Source',esc(label(a.source)))+fact('Country',esc(a.countryOfOrigin||'Unknown'))+fact('Popularity',a.popularity?a.popularity.toLocaleString():'Unknown')+fact('Favourites',a.favourites?a.favourites.toLocaleString():'Unknown')+fact('AniList score',a.averageScore?(a.averageScore/10).toFixed(1)+'/10':'Not rated')+'</div><h2>Genres</h2><div class="chips">'+(a.genres||[]).map(function(x){return '<span>'+esc(x)+'</span>'}).join('')+'</div>'+(links.length?'<h2>Official links</h2><p>'+links.map(function(x){return '<a class="btn g" style="margin:0 8px 8px 0" href="'+esc(x.url)+'" target="_blank" rel="noopener nofollow">'+esc(x.site)+'</a>'}).join('')+'</p>':'')+(related.length?'<h2>Related anime</h2><div class="grid">'+related.map(SakuraCatalog.card).join('')+'</div>':'')+(recs.length?'<h2>You may also like</h2><div class="grid">'+recs.map(SakuraCatalog.card).join('')+'</div>':'');SakuraList.mount(document.getElementById('dynamicSave'),{id:a.id,title:t,url:location.pathname+location.search,img:(a.coverImage||{}).large||'',episode:a.nextAiringEpisode?a.nextAiringEpisode.episode:0,airingAt:a.nextAiringEpisode?a.nextAiringEpisode.airingAt:0});if(alertMeta)SakuraAlerts.mount(document.getElementById('dynamicAlert'),alertMeta);if(a.nextAiringEpisode){(function run(){var left=a.nextAiringEpisode.airingAt-Math.floor(Date.now()/1000),v=o.querySelectorAll('.bigcd .v');if(v.length===4&&left>=0){v[0].textContent=Math.floor(left/86400);v[1].textContent=Math.floor(left%86400/3600);v[2].textContent=Math.floor(left%3600/60);v[3].textContent=left%60;setTimeout(run,1000)}})()}
+}).catch(function(){o.textContent='Could not load this anime. Please try again.'})})();
+<\/script>`;
+f.writeFileSync(P.join(O,'anime-info.html'),L(`Anime details | ${N}`,'Complete anime information, episodes, status, studio, synopsis and release schedule.',DOM+'/anime-info',infoBody,'',true));
+console.log('   ✓ complete AniList catalog + dynamic anime details');
 
 // ── fichas
 f.mkdirSync(P.join(O,'anime'),{recursive:true});
@@ -858,8 +917,10 @@ A.forEach(a=>{
    ${a.studio?`<span>${e(a.studio)}</span>`:''}
    ${a.gen.slice(0,3).map(g=>`<span>${e(g)}</span>`).join('')}
   </div>
+  <div class="mybar"><button class="btn g savebtn" id="save-${a.id}" type="button">Add to My Anime</button></div>
  </div>
 </div>
+<script>document.addEventListener('DOMContentLoaded',function(){SakuraList.mount(document.getElementById('save-${a.id}'),{id:${a.id},title:${JSON.stringify(a.t)},url:location.pathname,img:${JSON.stringify(a.img)},episode:${a.ep},airingAt:${a.at}})});<\/script>
 
 <div class="box big">
 <h3>Episode ${a.ep} airs in</h3>
@@ -873,6 +934,7 @@ A.forEach(a=>{
 <p style="margin-top:14px;font-size:.88rem;color:var(--tx2)">${fFecha(a.at)} at ${String(d.getUTCHours()).padStart(2,'0')}:${String(d.getUTCMinutes()).padStart(2,'0')} UTC</p>
 </div>
 
+<div class="notifybox" id="alert-${a.id}"><div><div class="nt">Get notified when episode ${a.ep} airs</div><div class="ns">One alert on this device. No account needed.</div><div class="installhelp">On iPhone or iPad: tap Share, choose “Add to Home Screen,” open SakuraAir from the new icon, then try again.</div></div><button class="btn" type="button">Notify me</button></div><script>document.addEventListener('DOMContentLoaded',function(){SakuraAlerts.mount(document.getElementById('alert-${a.id}'),{animeId:${a.id},title:${JSON.stringify(a.t)},episode:${a.ep},airingAt:${a.at}})});<\/script>
 <div class="box rv"><h3>When does ${e(a.t)} episode ${a.ep} come out?</h3>
 <p><strong>${e(a.t)}</strong> releases <strong>episode ${a.ep}</strong> on <strong>${fFecha(a.at)}</strong>${a.studio?`. The series is animated by ${e(a.studio)}`:''}${a.eps?` and runs for ${a.eps} episodes`:''}.</p>
 <p>New episodes drop every <strong>${a.day}</strong>${a.dur?`, each around ${a.dur} minutes long`:''}. ${a.sc?`It currently holds a score of <strong>${(a.sc/10).toFixed(1)}/10</strong> with ${a.pop.toLocaleString('en-US')} people tracking it.`:''}</p>
@@ -1058,19 +1120,34 @@ try{
  console.log('   ✓ og.png');
 }catch(err){console.log('   og.png failed: '+err.message)}
 
-f.writeFileSync(P.join(O,'_redirects'),'/index.html / 200\n');
+f.writeFileSync(P.join(O,'sw.js'),`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));self.addEventListener('push',e=>{let d={};try{d=e.data.json()}catch(x){d={title:'SakuraAir',body:'A new episode is airing.'}}e.waitUntil(self.registration.showNotification(d.title||'SakuraAir',{body:d.body||'',icon:d.icon||'/icon-192.png',badge:d.badge||'/favicon.ico',data:{url:d.url||'/'},tag:'sakuraair-episode',renotify:true}))});self.addEventListener('notificationclick',e=>{e.notification.close();e.waitUntil(clients.openWindow(e.notification.data.url||'/'))});`);
+f.writeFileSync(P.join(O,'_redirects'),'/anime-game / 301\n/anime-game.html / 301\n/index.html / 200\n');
 f.writeFileSync(P.join(O,'_headers'),
-`/*
+`/sitemap.xml
+  Content-Type: application/xml; charset=UTF-8
+  Cache-Control: public, max-age=300, must-revalidate
+
+/robots.txt
+  Content-Type: text/plain; charset=UTF-8
+  Cache-Control: public, max-age=300, must-revalidate
+
+/anime-info*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/catalog*
+  Cache-Control: no-store, no-cache, must-revalidate
+
+/*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   X-Frame-Options: SAMEORIGIN
-  Cache-Control: public, max-age=600, stale-while-revalidate=86400
+  Cache-Control: no-cache, no-store, must-revalidate
 
 /*.json
   Cache-Control: public, max-age=600, s-maxage=3600, stale-while-revalidate=86400
 
 /s.css
-  Cache-Control: public, max-age=3600, stale-while-revalidate=604800
+  Cache-Control: no-cache, must-revalidate
 /bg.webp
   Cache-Control: public, max-age=604800, immutable
 /girl.webp
@@ -1083,7 +1160,7 @@ f.writeFileSync(P.join(O,'_headers'),
   Cache-Control: public, max-age=3600, stale-while-revalidate=86400
 `);
 
-const U=['','schedule','season','genres','about','privacy','terms','contact']
+const U=['','catalog','my-anime','schedule','season','genres','about','privacy','terms','contact']
  .concat(DOW.filter(d=>byDay[d]).map(d=>`day-${s(d)}`))
  .concat(gens.map(([g])=>`genre-${s(g)}`))
  .concat(A.map(a=>`anime/${a.slug}`));
