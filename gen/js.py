@@ -24,15 +24,16 @@ function t(o){b.classList.toggle('open',o);d.classList.toggle('on',o);s.classLis
 if(b){b.addEventListener('click',function(){t(!d.classList.contains('on'))});s.addEventListener('click',function(){t(false)});
 document.addEventListener('keydown',function(ev){if(ev.key==='Escape')t(false)});d.addEventListener('click',function(ev){if(ev.target.closest('a'))t(false)})}
 var KEY='ck_sa',box=document.getElementById('ck');
-var _adsYa=false;
-function _iny(){if(_adsYa)return;var Z=window.__ZONAS;if(!Z||!Z.length)return;
- var host=document.body||document.documentElement;if(!host)return;_adsYa=true;
- for(var i=0;i<Z.length;i++){(function(sc,zn){
-  if(zn[1]){sc.dataset.zone=zn[1]}else{sc.setAttribute('data-cfasync','false');sc.async=true}
-  sc.src='https://'+zn[0]})(host.appendChild(document.createElement('script')),Z[i])}}
-function ads(){if(window.__ZONAS&&document.body){_iny();return}
- if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',function(){_iny()},{once:true})}
- else{setTimeout(_iny,0)}}
+var adsStarted=false;
+function ads(){
+ if(adsStarted)return;
+ adsStarted=true;
+ var sc=document.createElement('script');
+ sc.id='aclib';
+ sc.src='https://acscdn.com/script/aclib.js';
+ sc.onload=function(){if(window.aclib)window.aclib.runAutoTag({zoneId:'ckbksmjge8'})};
+ document.head.appendChild(sc);
+}
 try{var v=localStorage.getItem(KEY);
  if(v==='1'){ads()}else if(v!=='0'&&box){box.classList.add('on')}
  if(box){document.getElementById('ckSi').addEventListener('click',function(){try{localStorage.setItem(KEY,'1')}catch(e){}box.classList.remove('on');ads()});
@@ -97,23 +98,7 @@ window.SakuraList=(function(){var KEY='sakura_my_anime_v1';function all(){try{re
 <script>
 window.SakuraAlerts=(function(){var API='https://sakuraair-notifications.rekiquezada39.workers.dev',PUB='';function key(s){var b=atob((s+'='.repeat((4-s.length%4)%4)).replace(/-/g,'+').replace(/_/g,'/')),a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a}async function post(p,d){var r=await fetch(API+p,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(d)});if(!r.ok)throw Error('@@N_UNAVAIL@@');return r.json()}async function mount(el,m){if(!el)return;var b=el.querySelector('button'),h=el.querySelector('.installhelp');if(!('serviceWorker'in navigator)||!('PushManager'in window)){h.textContent='@@N_UNSUP@@';h.classList.add('on');b.disabled=true;return}var r=await navigator.serviceWorker.register('/sw.js');if(!PUB){var pk=await fetch(API+'/public-key').then(function(x){return x.json()});PUB=pk.publicKey}var sub=await r.pushManager.getSubscription(),oldKey='';try{oldKey=localStorage.getItem('sa_vapid_public')||''}catch(x){}if(sub&&oldKey!==PUB){await sub.unsubscribe();sub=null}try{localStorage.setItem('sa_vapid_public',PUB)}catch(x){}if(sub){var st=await post('/status',{endpoint:sub.endpoint,animeId:m.animeId}).catch(function(){return{subscribed:false}});if(st.subscribed){b.classList.add('on');b.textContent='@@N_ON@@'}}b.onclick=async function(){b.disabled=true;try{var sub=await r.pushManager.getSubscription();if(b.classList.contains('on')){await post('/unsubscribe',{endpoint:sub.endpoint,animeId:m.animeId});b.classList.remove('on');b.textContent='@@N_BTN@@'}else{var ios=/iphone|ipad|ipod/i.test(navigator.userAgent),standalone=matchMedia('(display-mode: standalone)').matches||navigator.standalone;if(ios&&!standalone){h.classList.add('on');b.disabled=false;return}if(Notification.permission==='denied')throw Error('BLOCKED');var permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();if(permission!=='granted')throw Error('BLOCKED');sub=sub||await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:key(PUB)});var saved=await post('/subscribe',{subscription:sub,animeId:m.animeId,title:m.title,episode:m.episode,airingAt:m.airingAt,url:location.href});if(!saved.confirmation)throw Error('@@N_TEST@@');b.classList.add('on');b.textContent='@@N_ON@@'}}catch(e){var blocked=Notification.permission==='denied'||e.message==='BLOCKED'||/permission denied/i.test(e.message);h.textContent=blocked?'@@N_BLOCKED@@':e.message;h.classList.add('on');if(blocked){b.textContent='@@N_BLK_BTN@@';b.classList.add('on')}}b.disabled=false}}return{mount:mount}})();
 </script>
-<script>window.__ZONAS=[["n6wxm.com/vignette.min.js","11970668"]];</script>
-<script>
-(function(){
- var URL='https://omg10.com/4/11715261',KEY='sa_direct_cap_v2',CADA=3,MAX=3,WINDOW=12*60*60*1000,now=Date.now();
- var state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};
- function read(){try{var x=JSON.parse(localStorage.getItem(KEY)||'null');if(x&&x.expiresAt>Date.now()){state.startedAt=+x.startedAt||now;state.expiresAt=+x.expiresAt;state.clicks=Math.max(0,+x.clicks||0);state.ads=Math.min(MAX,Math.max(0,+x.ads||0));return true}}catch(e){}return false}
- function save(){try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}}
- if(!read())save();
- window.addEventListener('storage',function(e){if(e.key===KEY)read()});
- document.addEventListener('click',function(){try{
-  now=Date.now();if(now>=state.expiresAt){state={startedAt:now,expiresAt:now+WINDOW,clicks:0,ads:0};save()}
-  if(state.ads>=MAX)return;
-  state.clicks++;if(state.clicks%CADA!==0){save();return}
-  state.ads++;save();var w=window.open(URL,'_blank','noopener');if(w&&w.focus)try{w.focus()}catch(e){}
- }catch(e){}},true);
-})();
-</script>
+
 """
 
 SEARCH = r"""<script>
