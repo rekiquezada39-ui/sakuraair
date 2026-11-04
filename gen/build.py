@@ -153,7 +153,7 @@ def shell(lang, path, alt_path, title, desc, main_html, before_main="", lds=(), 
             f'<title>{title}</title><meta name="description" content="{esc(desc)}"><link rel="canonical" href="{SITE}{path}">'
             f'<link rel="alternate" hreflang="en" href="{en_url}"><link rel="alternate" hreflang="es" href="{es_url}"><link rel="alternate" hreflang="x-default" href="{en_url}">'
             + ('<meta name="robots" content="noindex,follow">' if noindex else "")
-            + '<meta name="monetag" content="20276d347c7d19d7d24cea04109c96d1"><meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">'
+            + '<meta name="google-site-verification" content="U9iGxs4sIb4prXPIHujTEdxOh7eu-x9UDdaeqOjKHjE">'
             f'<meta property="og:title" content="{title}"><meta property="og:description" content="{esc(desc)}"><meta property="og:type" content="website"><meta property="og:url" content="{SITE}{path}">'
             f'<meta property="og:site_name" content="SakuraAir"><meta property="og:locale" content="{t["og_locale"]}"><meta property="og:image" content="{SITE}/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
             f'<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{title}"><meta name="twitter:image" content="{SITE}/og.png"><meta name="theme-color" content="#fffbfd">'
