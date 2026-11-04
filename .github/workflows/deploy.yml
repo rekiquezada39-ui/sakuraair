@@ -6,7 +6,8 @@ on:
     - cron: '0 10 * * *'
   workflow_dispatch:
   push:
-    branches: [ main ]
+    # Also publish changes made in this session; the Pages target remains production.
+    branches: [ main, arena/8a47d764-sakuraair ]
 
 permissions:
   contents: read
